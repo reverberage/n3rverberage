@@ -15,12 +15,17 @@ Every nerv concept maps to an Evangelion analog. See [EVANGELION.md](EVANGELION.
 ## Quick Start
 
 ```bash
-# Install
-uv sync
+# Install nerv as a global tool (once, runs everywhere):
+uv tool install git+https://github.com/juanmanueldaza/nerv.git
 
-# Initialize in your project
-cd /path/to/your/project
+# Initialize in your project:
 nerv init
+```
+
+Or without installing:
+
+```bash
+uvx --from git+https://github.com/juanmanueldaza/nerv.git nerv init
 ```
 
 `nerv init` detects your project stack (python/node/go/generic) and scaffolds 40+ files:
@@ -119,8 +124,14 @@ project: your-project-name
 ## Development
 
 ```bash
+# Install dev dependencies:
 uv sync --dev
+
+# Run tests:
 uv run pytest
+
+# Optional: install nerv globally in editable mode (source changes reflect immediately):
+uv tool install --editable .
 ```
 
 ## Security
