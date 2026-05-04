@@ -79,7 +79,7 @@ def test_deep_merge_empty_overlay():
 
 def test_manifest_has_expected_entries():
     """Test manifest has expected number of entries."""
-    assert len(FILE_UPDATE_MANIFEST) == 27
+    assert len(FILE_UPDATE_MANIFEST) == 33
 
 
 def test_manifest_marker_files():
@@ -87,9 +87,7 @@ def test_manifest_marker_files():
     marker_files = [
         e for e in FILE_UPDATE_MANIFEST if e.strategy == UpdateStrategy.MARKER_MERGE
     ]
-    assert (
-        len(marker_files) == 0
-    )  # nerv uses overwrite for a2a-config, not marker_merge
+    assert len(marker_files) == 1  # AGENTS.md is marker_merge
 
 
 def test_manifest_json_merge_files():
@@ -107,7 +105,7 @@ def test_manifest_skip_default_files_are_commands():
     skip_files = [
         e for e in FILE_UPDATE_MANIFEST if e.strategy == UpdateStrategy.SKIP_DEFAULT
     ]
-    assert len(skip_files) == 23
+    assert len(skip_files) == 28
     paths = {e.output_path for e in skip_files}
     assert ".opencode/skills/code/SKILL.md" in paths
     assert ".opencode/skills/testing/SKILL.md" in paths

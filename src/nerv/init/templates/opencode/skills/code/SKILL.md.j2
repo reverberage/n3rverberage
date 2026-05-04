@@ -26,3 +26,14 @@ PREFER:
 - Early returns over deeply nested conditionals
 - `pathlib.Path` over `os.path` for filesystem operations
 - Dataclasses or Pydantic over raw dicts for structured data
+
+{% if profile_has_frameworks %}
+## Detected Framework Conventions
+
+{% for fw in profile_frameworks %}
+### {{ fw.name }}
+
+{{ fw.guidance }}
+
+{% endfor %}
+{% endif %}

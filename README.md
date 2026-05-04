@@ -28,18 +28,20 @@ Or without installing:
 uvx --from git+https://github.com/juanmanueldaza/nerv.git nerv init
 ```
 
-`nerv init` detects your project stack (python/node/go/generic) and scaffolds 40+ files:
+`nerv init` detects your project stack (python/node/go/generic) and scaffolds 45+ files:
 
 | File | Purpose |
 |------|---------|
-| `AGENTS.md` | Coding standards with skill index |
+| `AGENTS.md` | Coding standards with **LCL injection** — auto-detected frameworks, tools, project structure, and framework-specific guidance |
 | `opencode.json` | opencode config: MCP servers + instructions |
-| `.opencode/skills/` | Agent skills — code, testing, commits, SDD (12 skills) |
-| `.opencode/commands/` | Slash commands — `/sdd-new`, `/judgment-day`, `/review`, `/handoff` |
-| `.opencode/agents/` | Sub-agents — 7 SDD phase agents (explorer → archiver) |
+| `.opencode/skills/` | Agent skills — code, testing, commits, SDD, git-ops, github-ops (14 skills). Code and testing skills get framework-specific snippets injected. |
+| `.opencode/commands/` | Slash commands — `/sdd-new`, `/judgment-day`, `/review`, `/handoff` plus auto-generated `/test`, `/lint`, `/typecheck` (when tools detected) |
+| `.opencode/agents/` | Sub-agents — 7 SDD phase agents + 2 operations agents (git-ops, github-ops) + **nerv** primary orchestrator agent |
 | `.nerv/a2a-config.yaml` | A2A hub configuration |
 | `.nerv/skill-registry.md` | Auto-generated skill index for hub |
 | `.githooks/pre-push` | Git pre-push hook |
+
+**LCL Injection**: `nerv init` parses your `pyproject.toml` / `package.json` / `go.mod` dependencies and auto-detects frameworks (FastAPI, Flask, Django, SQLAlchemy, React, Express, etc.), tooling (pytest, ruff, mypy, jest, etc.), and project structure. This context is injected into `AGENTS.md`, skill files, and slash commands — so the AI agent "breathes" your project from the first session.
 
 ## OpenCode Integration
 

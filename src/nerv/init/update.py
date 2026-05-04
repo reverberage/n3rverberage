@@ -13,6 +13,7 @@ from nerv.init.detector import detect_stack
 from nerv.init.registry import write_registry
 from nerv.init.renderer import TemplateEngine
 from nerv.init.writer import validate_markers, write_file, MARKER_START, MARKER_END
+from nerv.init.analyzer import analyze_project
 
 
 class UpdateStrategy(StrEnum):
@@ -80,6 +81,11 @@ class UpdateSummary:
 
 
 FILE_UPDATE_MANIFEST: list[UpdateEntry] = [
+    UpdateEntry(
+        "opencode/agents.md.j2",
+        "AGENTS.md",
+        UpdateStrategy.MARKER_MERGE,
+    ),
     UpdateEntry(
         "nerv/a2a-config.yaml.j2", ".nerv/a2a-config.yaml", UpdateStrategy.OVERWRITE
     ),
@@ -213,6 +219,34 @@ FILE_UPDATE_MANIFEST: list[UpdateEntry] = [
         ".opencode/agents/sdd-archiver.md",
         UpdateStrategy.SKIP_DEFAULT,
     ),
+    # Git & GitHub sub-agents
+    UpdateEntry(
+        "opencode/agents/git-ops.md.j2",
+        ".opencode/agents/git-ops.md",
+        UpdateStrategy.SKIP_DEFAULT,
+    ),
+    UpdateEntry(
+        "opencode/agents/github-ops.md.j2",
+        ".opencode/agents/github-ops.md",
+        UpdateStrategy.SKIP_DEFAULT,
+    ),
+    # Git & GitHub skills
+    UpdateEntry(
+        "opencode/skills/git-ops/SKILL.md.j2",
+        ".opencode/skills/git-ops/SKILL.md",
+        UpdateStrategy.SKIP_DEFAULT,
+    ),
+    UpdateEntry(
+        "opencode/skills/github-ops/SKILL.md.j2",
+        ".opencode/skills/github-ops/SKILL.md",
+        UpdateStrategy.SKIP_DEFAULT,
+    ),
+    # NERV primary agent
+    UpdateEntry(
+        "opencode/agents/nerv.md.j2",
+        ".opencode/agents/nerv.md",
+        UpdateStrategy.SKIP_DEFAULT,
+    ),
 ]
 
 
@@ -252,7 +286,7 @@ def _resolve_only_category(only: str) -> UpdateStrategy:
 
 def _select_manifest_entries(only: str | None) -> list[UpdateEntry]:
     if only is None or only.strip().lower() == "all":
-        return FILE_UPDATE_MANIFEST
+        return list(FILE_UPDATE_MANIFEST)
     strategy = _resolve_only_category(only)
     return [entry for entry in FILE_UPDATE_MANIFEST if entry.strategy == strategy]
 
@@ -281,8 +315,21 @@ def run_update(
 
         render_ctx = {**context.to_dict(), "nerv_binary": nerv_binary}
 
+        profile = analyze_project(root, context)
+        render_ctx.update(profile.to_j2_context())
+
         summary = UpdateSummary()
         entries = _select_manifest_entries(only)
+
+        # Append dynamic command entries based on detected tools
+        template_dir = templates_dir
+        for tool in profile.tools:
+            tpl_name = f"opencode/commands/{tool.name}.md.j2"
+            out_path = f".opencode/commands/{tool.name}.md"
+            if (template_dir / tpl_name).exists():
+                entries.append(
+                    UpdateEntry(tpl_name, out_path, UpdateStrategy.CREATE_IF_MISSING)
+                )
 
         for entry in entries:
             result = _process_entry(

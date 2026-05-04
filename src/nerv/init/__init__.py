@@ -5,6 +5,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
+from nerv.init.analyzer import analyze_project
 from nerv.init.context import ProjectContext
 from nerv.init.detector import detect_stack
 from nerv.init.registry import write_registry
@@ -12,7 +13,6 @@ from nerv.init.renderer import TemplateEngine
 from nerv.init.writer import (
     WriteResult,
     configure_git_hooks,
-    scaffold_agents_md,
     write_file,
 )
 
@@ -173,6 +173,8 @@ FILE_MANIFEST = [
         False,
         False,
     ),
+    # NERV primary agent (user-facing entry point)
+    ("opencode/agents/nerv.md.j2", ".opencode/agents/nerv.md", False, False),
 ]
 
 
@@ -201,30 +203,60 @@ def run_init(
 
         templates_dir = Path(__file__).parent / "templates"
         engine = TemplateEngine(templates_dir)
-        render_ctx = {**context.to_dict(), "nerv_binary": nerv_binary}
+
+        profile = analyze_project(root, context)
+        render_ctx = {
+            **context.to_dict(),
+            **profile.to_j2_context(),
+            "nerv_binary": nerv_binary,
+        }
 
         created_count = 0
         skipped_count = 0
         error_count = 0
 
-        # Scaffold AGENTS.md (replaces template rendering)
+        # Scaffold AGENTS.md via Jinja2 template
         try:
             agents_md = root / "AGENTS.md"
             existed = agents_md.exists()
-            result_path = scaffold_agents_md(
-                root, context.stack.value, final_project_name, force=force
-            )
             if existed and not force:
-                print(f"⊘ Skipped {result_path.relative_to(root)} (already exists)")
+                print("⊘ Skipped AGENTS.md (already exists)")
                 skipped_count += 1
             else:
-                print(f"✓ Created {result_path.relative_to(root)}")
-                created_count += 1
+                content = engine.render("opencode/agents.md.j2", render_ctx)
+                result = write_file(
+                    agents_md,
+                    content,
+                    force=force,
+                    use_markers=True,
+                )
+                if result in (WriteResult.CREATED, WriteResult.OVERWRITTEN):
+                    print("✓ Created AGENTS.md")
+                    created_count += 1
+                elif result == WriteResult.UPDATED:
+                    print("✓ Updated AGENTS.md")
+                    created_count += 1
         except Exception as exc:
             print(f"✗ Error scaffolding AGENTS.md: {exc}")
             error_count += 1
 
-        for template_name, output_path, use_markers, make_executable in FILE_MANIFEST:
+        # Append dynamic command entries based on detected tools
+        dynamic_entries = []
+        for tool in profile.tools:
+            template_name = f"opencode/commands/{tool.name}.md.j2"
+            output_path = f".opencode/commands/{tool.name}.md"
+            template_path = templates_dir / template_name
+            if template_path.exists():
+                dynamic_entries.append((template_name, output_path, False, False))
+
+        all_manifest_entries = list(FILE_MANIFEST) + dynamic_entries
+
+        for (
+            template_name,
+            output_path,
+            use_markers,
+            make_executable,
+        ) in all_manifest_entries:
             try:
                 content = engine.render(template_name, render_ctx)
                 target = root / output_path
