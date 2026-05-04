@@ -5,6 +5,14 @@ from pathlib import Path
 import typer
 
 from nerv.a2a.hub import main as hub_main
+from nerv.daemon import (
+    daemon_enable,
+    daemon_install,
+    daemon_logs,
+    daemon_start,
+    daemon_status,
+    daemon_stop,
+)
 from nerv.init import run_init
 from nerv.cli_memory import memory_app
 
@@ -12,7 +20,9 @@ app = typer.Typer(
     name="nerv", help="Invisible engineering infrastructure for opencode agents"
 )
 hub_app = typer.Typer(help="A2A Hub commands")
+daemon_app = typer.Typer(help="Manage nerv hub daemon")
 app.add_typer(hub_app, name="hub")
+app.add_typer(daemon_app, name="daemon")
 app.add_typer(memory_app, name="memory")
 
 
@@ -76,6 +86,48 @@ def update_command(
     raise typer.Exit(
         code=run_update(root, dry_run=dry_run, force_commands=force_commands, only=only)
     )
+
+
+@daemon_app.command("install")
+def daemon_install_cmd(
+    root: Path = typer.Option(Path.cwd(), "--root", help="Project root directory"),
+) -> None:
+    """Install the hub as a systemd user service."""
+    raise typer.Exit(code=daemon_install(root))
+
+
+@daemon_app.command("start")
+def daemon_start_cmd() -> None:
+    """Start the hub daemon."""
+    raise typer.Exit(code=daemon_start())
+
+
+@daemon_app.command("stop")
+def daemon_stop_cmd() -> None:
+    """Stop the hub daemon."""
+    raise typer.Exit(code=daemon_stop())
+
+
+@daemon_app.command("status")
+def daemon_status_cmd() -> None:
+    """Show hub daemon status."""
+    raise typer.Exit(code=daemon_status())
+
+
+@daemon_app.command("enable")
+def daemon_enable_cmd(
+    now: bool = typer.Option(False, "--now", help="Also start the daemon"),
+) -> None:
+    """Enable hub daemon to start on login."""
+    raise typer.Exit(code=daemon_enable(now=now))
+
+
+@daemon_app.command("logs")
+def daemon_logs_cmd(
+    root: Path = typer.Option(Path.cwd(), "--root", help="Project root directory"),
+) -> None:
+    """Tail hub daemon logs."""
+    raise typer.Exit(code=daemon_logs(root))
 
 
 def main() -> None:

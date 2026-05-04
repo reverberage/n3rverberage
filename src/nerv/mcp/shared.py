@@ -29,7 +29,7 @@ def resolve_runtime_settings(project_root: Path | None = None) -> RuntimeSetting
 
 
 def detect_agent_source() -> str:
-    return os.environ.get("NERV_AGENT_SOURCE", "unknown")
+    return os.environ.get("NERV_AGENT_SOURCE", "opencode")
 
 
 def result_payload(
@@ -67,9 +67,7 @@ def hub_rpc(hub_url: str, method: str, params: dict) -> dict:
     return data["result"]
 
 
-def build_mcp_server(
-    name: str, instructions: str, settings: RuntimeSettings
-) -> FastMCP:
+def build_mcp_server(name: str, instructions: str) -> FastMCP:
     return FastMCP(
         name=name,
         instructions=instructions,

@@ -30,7 +30,7 @@ _rpc = hub_rpc
 
 def _resolve_agent_ids(agent_id: str | None = None) -> list[str]:
     resolved = (agent_id or detect_agent_source()).strip().lower()
-    if not resolved or resolved == "unknown":
+    if not resolved:
         raise ValueError("agent_id is required when NERV_AGENT_SOURCE is not set")
     return list(dict.fromkeys(_AGENT_ID_ALIASES.get(resolved, (resolved,))))
 
@@ -62,7 +62,6 @@ def build_hub_server(project_root: Path | None = None):
     server = build_mcp_server(
         "nerv-hub",
         "Delegate tasks to other agents and poll for assigned work via the A2A hub.",
-        settings,
     )
 
     @server.tool(

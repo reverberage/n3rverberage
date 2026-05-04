@@ -8,11 +8,11 @@ NERV — invisible engineering infrastructure for AI agents — draws its name a
 |---|---|---|
 | **NERV** | The nerv project | The organization itself — infrastructure operating behind the scenes, unseen but essential |
 | **MAGI Supercomputer** | Memory Service | Tripartite decision system: **Melchior** (ChromaDB vector store), **Balthasar** (SQLite relation store), **Casper** (SessionManager). Three minds, one consensus |
-| **EVA Units** | AI Agents | Purpose-built bio-mechanical entities that execute missions. Each agent = one Evangelion unit, configured by its Entry Plug (session context) |
+| **EVA Units** | AI Agents | Purpose-built bio-mechanical entities that execute missions. Each agent = one Evangelion unit, configured by its Entry Plug (session context). Agent identity is tracked via `NERV_AGENT_SOURCE` for memory attribution and task routing |
 | **Entry Plug** | Agent Context / Session | The cockpit where the pilot (user) synchronizes with the EVA (agent). Synchronization rate = context quality |
-| **NERV Command Center** | A2A Hub | Central dispatch. Routes missions (tasks) to EVAs (agents), monitors status, issues commands. JSON-RPC is the comms protocol |
+| **NERV Command Center** | A2A Hub | Central dispatch. Routes missions (tasks) to EVAs (agents) by skill ID, monitors status via SSE streaming, collects results. `delegate_task → check_pending_tasks → complete_task` is the mission lifecycle |
 | **Human Instrumentality Project** | SDD Workflow | The grand protocol — an 8-phase pipeline (explore → propose → spec → design → tasks → apply → verify → archive) designed to achieve seamless integration between human intent and machine execution |
-| **Geofront** | `.nerv/` Directory | The hidden underground infrastructure. Houses memory stores (`chroma/`, `relations.db`), hub state (`hub-state/`), and configuration (`a2a-config.yaml`). Invisible to the surface world |
+| **Geofront** | `.nerv/` Directory | The hidden underground infrastructure. Houses memory stores (`chroma/`, `relations.db`), hub state (`hub-state/`), daemon configuration (`systemd/`), and runtime settings (`a2a-config.yaml`). Invisible to the surface world |
 | **SEELE** | SDD Verify / Judgment Day | The shadowy oversight council. Reviews outputs against specs, passes verdicts. The adversarial `judgment-day` skill is SEELE's dual-model review |
 | **AT Field** | Security Boundaries | Absolute Terror field: localhost-only binding, read-only safe mode (`NERV_MEMORY_PROFILE=safe`), no hardcoded secrets. Isolation is absolute |
 | **S² Engine** | SDD Workflow Engine | Super Solenoid engine: the perpetual improvement drive. Each SDD cycle powers the next. Self-sustaining once initiated |
@@ -47,6 +47,6 @@ Each phase is a step toward instrumentality: the perfect fusion of specification
 
 *Neon Genesis Evangelion* (1995–1996, Hideaki Anno / Gainax) is one of the most influential anime series ever created. Its themes — human connection, the relationship between creators and their tools, the tension between control and autonomy, the hidden infrastructure that supports society — resonate deeply with software engineering.
 
-The nerv project borrows Evangelion's names and metaphors because they're thematically appropriate, not because we claim any affiliation. NERV (the anime organization) develops and deploys EVAs via a command-and-control infrastructure hidden beneath Tokyo-3. NERV (this project) develops and deploys AI agents via MCP servers and an A2A hub hidden beneath your project root. The parallel is too perfect to ignore.
+The nerv project borrows Evangelion's names and metaphors because they're thematically appropriate, not because we claim any affiliation. NERV (the anime organization) develops and deploys EVAs via a command-and-control infrastructure hidden beneath Tokyo-3. NERV (this project) develops and deploys AI agents via opencode-native MCP servers and an A2A hub hidden beneath your project root. The daemon runs as a systemd service — always present, invisible infrastructure.
 
 **nerv is not affiliated with Gainax, Khara, or the Evangelion franchise. All Evangelion concepts are used as thematic metaphor only.**

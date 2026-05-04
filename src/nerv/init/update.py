@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
@@ -81,6 +82,11 @@ class UpdateSummary:
 FILE_UPDATE_MANIFEST: list[UpdateEntry] = [
     UpdateEntry(
         "nerv/a2a-config.yaml.j2", ".nerv/a2a-config.yaml", UpdateStrategy.OVERWRITE
+    ),
+    UpdateEntry(
+        "nerv/systemd/nerv-hub.service.j2",
+        ".nerv/systemd/nerv-hub.service",
+        UpdateStrategy.OVERWRITE,
     ),
     UpdateEntry("opencode.json.j2", "opencode.json", UpdateStrategy.JSON_MERGE),
     UpdateEntry(
@@ -262,17 +268,25 @@ def run_update(
         context = ProjectContext.build(
             project_name=stack_info.project_name,
             stack=stack_info.stack,
+            project_root=root,
         )
 
         templates_dir = Path(__file__).parent / "templates"
         engine = TemplateEngine(templates_dir)
+
+        nerv_binary = shutil.which("nerv")
+        if not nerv_binary:
+            print("✗ Error: nerv binary not found in PATH")
+            return 1
+
+        render_ctx = {**context.to_dict(), "nerv_binary": nerv_binary}
 
         summary = UpdateSummary()
         entries = _select_manifest_entries(only)
 
         for entry in entries:
             result = _process_entry(
-                entry, root, engine, context, dry_run, force_commands
+                entry, root, engine, render_ctx, dry_run, force_commands
             )
             summary.results.append(result)
             _print_result(result, dry_run)
@@ -297,12 +311,12 @@ def _process_entry(
     entry: UpdateEntry,
     root: Path,
     engine: TemplateEngine,
-    context: ProjectContext,
+    render_ctx: dict,
     dry_run: bool,
     force_commands: bool,
 ) -> UpdateResult:
     try:
-        content = engine.render(entry.template_name, context.to_dict())
+        content = engine.render(entry.template_name, render_ctx)
         target = root / entry.output_path
 
         if entry.strategy == UpdateStrategy.MARKER_MERGE:

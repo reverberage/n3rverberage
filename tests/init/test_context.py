@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from pydantic import ValidationError
 
@@ -18,7 +20,9 @@ def test_stack_enum_values():
 
 def test_project_context_build():
     """Test ProjectContext.build() creates valid context with auto-populated fields."""
-    ctx = ProjectContext.build(project_name="myapp", stack=Stack.PYTHON)
+    ctx = ProjectContext.build(
+        project_name="myapp", stack=Stack.PYTHON, project_root=Path("/tmp/myapp")
+    )
 
     assert ctx.project_name == "myapp"
     assert ctx.stack == Stack.PYTHON
@@ -30,7 +34,11 @@ def test_project_context_build():
 
 def test_project_context_to_dict():
     """Test to_dict() returns correct structure for Jinja2 rendering."""
-    ctx = ProjectContext.build(project_name="testproject", stack=Stack.NODE)
+    ctx = ProjectContext.build(
+        project_name="testproject",
+        stack=Stack.NODE,
+        project_root=Path("/tmp/testproject"),
+    )
     result = ctx.to_dict()
 
     assert result["project_name"] == "testproject"
@@ -42,7 +50,9 @@ def test_project_context_to_dict():
 def test_project_context_validates_project_name():
     """Test that empty or invalid project names raise ValidationError."""
     with pytest.raises(ValidationError):
-        ProjectContext.build(project_name="", stack=Stack.PYTHON)
+        ProjectContext.build(
+            project_name="", stack=Stack.PYTHON, project_root=Path("/tmp")
+        )
 
 
 def test_stack_validation():

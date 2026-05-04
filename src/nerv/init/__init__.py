@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
 
 from nerv.init.context import ProjectContext
@@ -17,6 +18,12 @@ from nerv.init.writer import (
 
 FILE_MANIFEST = [
     ("nerv/a2a-config.yaml.j2", ".nerv/a2a-config.yaml", False, False),
+    (
+        "nerv/systemd/nerv-hub.service.j2",
+        ".nerv/systemd/nerv-hub.service",
+        False,
+        False,
+    ),
     ("opencode.json.j2", "opencode.json", False, False),
     ("githooks/pre-push.py.j2", ".githooks/pre-push", False, True),
     # Skills (opencode-native path)
@@ -182,12 +189,19 @@ def run_init(
         context = ProjectContext.build(
             project_name=final_project_name,
             stack=stack_info.stack,
+            project_root=root,
         )
 
         print(f"Detected: {stack_info.stack.value} ({stack_info.project_name})")
 
+        nerv_binary = shutil.which("nerv")
+        if not nerv_binary:
+            print("✗ Error: nerv binary not found in PATH")
+            return 1
+
         templates_dir = Path(__file__).parent / "templates"
         engine = TemplateEngine(templates_dir)
+        render_ctx = {**context.to_dict(), "nerv_binary": nerv_binary}
 
         created_count = 0
         skipped_count = 0
@@ -212,7 +226,7 @@ def run_init(
 
         for template_name, output_path, use_markers, make_executable in FILE_MANIFEST:
             try:
-                content = engine.render(template_name, context.to_dict())
+                content = engine.render(template_name, render_ctx)
                 target = root / output_path
                 result = write_file(
                     target,
@@ -258,6 +272,9 @@ def run_init(
             return 1
 
         print("NERV is configured. Work inside opencode.")
+        print(
+            "Next: Run 'nerv daemon install' to set up the hub as a background service."
+        )
         return 0
 
     except Exception as exc:

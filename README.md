@@ -57,11 +57,18 @@ NERV generates files in opencode's native discovery paths. When you run opencode
 ```bash
 nerv init [--stack python|node|go|generic] [--force]
 nerv update [--dry-run] [--force-commands] [--only <strategy>]
-nerv hub start
+nerv hub start                    # foreground (development)
+nerv daemon install|start|stop|status|enable|logs  # background service (recommended)
 nerv memory list|search|prune|stats
 ```
 
 `--only` strategies: `overwrite`, `json-merge`, `create-if-missing`. Use `--force-commands` to overwrite commands and skills on update.
+
+After `git pull`, reinstall from source to pick up changes:
+
+```bash
+uv tool install --reinstall .
+```
 
 ### MCP Servers
 

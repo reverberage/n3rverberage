@@ -3,7 +3,10 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
+import signal
 from datetime import UTC, datetime
+from logging.handlers import RotatingFileHandler
 from typing import Any
 
 from aiohttp import web
@@ -49,6 +52,7 @@ class A2AHub:
         app.router.add_get("/.well-known/agent.json", self.get_hub_card)
         app.router.add_get("/agents/{agent_id}/agent.json", self.get_agent_card)
         app.router.add_post("/rpc", self.handle_rpc)
+        app.router.add_get("/rpc/stream", self.handle_sse_stream)
         return app
 
     async def _recover_tasks(self) -> None:
@@ -117,6 +121,50 @@ class A2AHub:
         if card is None:
             raise web.HTTPNotFound(text=f"Unknown agent: {agent_id}")
         return web.json_response(card.model_dump(mode="json"))
+
+    async def handle_sse_stream(self, request: web.Request) -> web.StreamResponse:
+        """SSE stream of task status updates.
+
+        Query params: agent_id (optional) for agent-level stream,
+        task_id (optional) for single-task stream.
+        """
+        agent_id = request.query.get("agent_id")
+        task_id = request.query.get("task_id")
+
+        if not agent_id and not task_id:
+            raise web.HTTPBadRequest(
+                text="Either agent_id or task_id query parameter is required"
+            )
+
+        response = web.StreamResponse(
+            status=200,
+            reason="OK",
+            headers={
+                "Content-Type": "text/event-stream",
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+            },
+        )
+        await response.prepare(request)
+
+        try:
+            if task_id:
+                async for event_data in self.state.subscribe(task_id):
+                    response.write(_format_sse_event(event_data))
+                response.write(
+                    _format_sse_event(
+                        {"type": "done", "task_id": task_id}, event_type="stream-end"
+                    )
+                )
+            elif agent_id:
+                async for event_data in self.state.subscribe_agent(agent_id):
+                    response.write(_format_sse_event(event_data))
+        except asyncio.CancelledError:
+            logger.debug("SSE stream cancelled for %s", agent_id or task_id)
+        except ConnectionResetError:
+            logger.debug("SSE stream client disconnected for %s", agent_id or task_id)
+
+        return response
 
     async def handle_rpc(self, request: web.Request) -> web.Response:
         """JSON-RPC 2.0 handler: routes to tasks/send, get, cancel, list, complete."""
@@ -431,17 +479,71 @@ async def run_hub() -> None:
     site = web.TCPSite(runner, host=settings.a2a_host, port=settings.a2a_port)
     await site.start()
     logger.info("nerv hub listening on %s:%d", settings.a2a_host, settings.a2a_port)
-    await asyncio.Event().wait()
+
+    pid_path = settings.paths.pid_file
+    pid_path.write_text(str(os.getpid()))
+
+    shutdown_event = asyncio.Event()
+
+    loop = asyncio.get_running_loop()
+    for sig in (signal.SIGTERM, signal.SIGINT):
+        try:
+            loop.add_signal_handler(sig, shutdown_event.set)
+        except NotImplementedError:
+            logger.debug("signal handlers not supported on this platform")
+
+    try:
+        await shutdown_event.wait()
+        logger.info("nerv hub shutting down on signal")
+    finally:
+        _mark_working_tasks_failed(hub)
+        await runner.cleanup()
+        logger.info("nerv hub stopped")
+        try:
+            pid_path.unlink(missing_ok=True)
+        except OSError:
+            logger.debug("failed to unlink pid file %s", pid_path)
+
+
+def _mark_working_tasks_failed(hub: A2AHub) -> None:
+    for task in hub.state.list_tasks():
+        if task.state == TaskState.WORKING:
+            hub.state.update_task(
+                task.id,
+                state=TaskState.FAILED,
+                error_code="RESTART_RECOVERY",
+                error_message="Hub shut down while task was in progress.",
+                metadata={
+                    **task.metadata,
+                    "recovery_timestamp": datetime.now(UTC).isoformat(),
+                },
+            )
 
 
 def main() -> None:
-    """Entry point for nerv-hub command."""
-    import os
-
     log_level = os.environ.get("NERV_LOG_LEVEL", "INFO").upper()
+
+    settings = resolve_runtime_settings()
+    ensure_runtime_directories(settings.paths)
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(log_level)
+    file_handler = RotatingFileHandler(
+        settings.paths.log_file, maxBytes=10 * 1024 * 1024, backupCount=3
+    )
+    file_handler.setLevel(log_level)
+    for handler in (console_handler, file_handler):
+        handler.setFormatter(
+            logging.Formatter(
+                "%(asctime)s %(levelname)-8s %(name)s  %(message)s",
+                datefmt="%H:%M:%S",
+            )
+        )
+
     logging.basicConfig(
         level=log_level,
-        format="%(asctime)s %(levelname)-8s %(name)s  %(message)s",
-        datefmt="%H:%M:%S",
+        handlers=[console_handler, file_handler],
+        force=True,
     )
+
     asyncio.run(run_hub())

@@ -79,7 +79,7 @@ def test_deep_merge_empty_overlay():
 
 def test_manifest_has_expected_entries():
     """Test manifest has expected number of entries."""
-    assert len(FILE_UPDATE_MANIFEST) == 26
+    assert len(FILE_UPDATE_MANIFEST) == 27
 
 
 def test_manifest_marker_files():

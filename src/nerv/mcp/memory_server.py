@@ -29,7 +29,6 @@ def build_memory_server(project_root: Path | None = None):
     server = build_mcp_server(
         "nerv-memory",
         "Shared persistent memory for agent interactions.",
-        settings,
     )
     profile = os.environ.get("NERV_MEMORY_PROFILE", "full")
 

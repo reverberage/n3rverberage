@@ -11,8 +11,14 @@ def test_resolve_agent_ids_uses_current_agent_aliases(monkeypatch) -> None:
     assert hub_server._resolve_agent_ids() == ["opencode"]
 
 
-def test_resolve_agent_ids_requires_explicit_agent_without_env(monkeypatch) -> None:
+def test_resolve_agent_ids_defaults_to_opencode_without_env(monkeypatch) -> None:
     monkeypatch.delenv("NERV_AGENT_SOURCE", raising=False)
+
+    assert hub_server._resolve_agent_ids() == ["opencode"]
+
+
+def test_resolve_agent_ids_raises_on_empty_source(monkeypatch) -> None:
+    monkeypatch.setenv("NERV_AGENT_SOURCE", "")
 
     with pytest.raises(ValueError, match="agent_id is required"):
         hub_server._resolve_agent_ids()

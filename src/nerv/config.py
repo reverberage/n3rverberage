@@ -17,6 +17,14 @@ class RuntimePaths(BaseModel):
     hub_state_dir: Path
     logs_dir: Path
 
+    @property
+    def pid_file(self) -> Path:
+        return self.nerv_dir / "hub.pid"
+
+    @property
+    def log_file(self) -> Path:
+        return self.logs_dir / "hub.log"
+
     @classmethod
     def from_project_root(cls, project_root: Path) -> "RuntimePaths":
         return cls(

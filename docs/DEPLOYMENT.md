@@ -1,6 +1,6 @@
 # Deployment
 
-NERV is a local-only tool that runs as part of your development workflow. It is not designed for production server deployment. This guide covers setup for development machines and CI/CD environments.
+NERV is a local-only tool that runs as part of your development workflow. It is not designed for production server deployment.
 
 ## Development Machine
 
@@ -8,6 +8,7 @@ NERV is a local-only tool that runs as part of your development workflow. It is 
 
 - Python >= 3.14
 - [uv](https://github.com/astral-sh/uv) package manager
+- systemd (Linux) for daemon mode
 
 ### Install
 
@@ -17,7 +18,7 @@ cd nerv
 uv sync
 ```
 
-This installs NERV in a virtual environment managed by uv. Entry points `nerv`, `nerv-memory`, and `nerv-hub` become available.
+This installs NERV in a virtual environment managed by uv. Entry points `nerv`, `nerv-memory`, and `nerv-hub` are available.
 
 ### Verify Installation
 
@@ -37,29 +38,28 @@ nerv init
 ```
 
 This scaffolds:
-- `AGENTS.md` — Coding standards
+- `AGENTS.md` — Coding standards and agent instructions
 - `.nerv/a2a-config.yaml` — Hub configuration
-- `.nerv/skills/` — Agent skills directory
-- `mcp.json` — MCP server configuration for opencode
+- `opencode.json` — MCP server configuration with env vars for opencode
+- `.nerv/systemd/nerv-hub.service` — systemd user unit template
+- `.opencode/` — Agent skills, commands, and subagent definitions
+- `.githooks/pre-push` — Git hook for SDD verification
 
-### 2. Configure MCP Servers
+### 2. Start the Hub
 
-Add to your opencode `mcp.json` (or equivalent):
+**Daemon mode (recommended):**
 
-```json
-{
-  "mcpServers": {
-    "nerv-memory": {
-      "command": "nerv-memory"
-    },
-    "nerv-hub": {
-      "command": "nerv-hub"
-    }
-  }
-}
+The daemon requires the systemd unit file created by `nerv init`. Run init first, then:
+
+```bash
+nerv daemon install   # install systemd user service
+nerv daemon enable --now  # enable on login + start now (equivalent to enable + start)
+nerv daemon status    # check status
+nerv daemon logs      # tail hub log file
+nerv daemon stop      # stop the daemon
 ```
 
-### 3. Start the Hub
+**Foreground mode (development):**
 
 ```bash
 nerv hub start
@@ -73,12 +73,113 @@ hub:
   port: 19820
 ```
 
+### 3. MCP Server Configuration
+
+`nerv init` generates an `opencode.json` with MCP servers and env vars pre-configured:
+
+```json
+{
+  "mcp": {
+    "nerv-memory": {
+      "type": "local",
+      "command": ["uv", "run", "nerv-memory"],
+      "env": {"NERV_AGENT_SOURCE": "opencode"}
+    },
+    "nerv-hub": {
+      "type": "local",
+      "command": ["uv", "run", "nerv-hub"],
+      "env": {"NERV_AGENT_SOURCE": "opencode"}
+    }
+  }
+}
+```
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NERV_LOG_LEVEL` | `INFO` | Log level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
+| `NERV_AGENT_SOURCE` | `opencode` | Agent identifier for memory scope and hub operations |
+| `NERV_HUB_URL` | `http://127.0.0.1:19820` | Hub URL for MCP delegation |
+| `NERV_MEMORY_PROFILE` | `full` | Memory tool availability (`full` or `safe`) |
+
+## Multi-Agent Architecture
+
+NERV enables multiple opencode agents across different projects to coordinate through a shared hub and independent per-project memory.
+
+### Architecture
+
+```
+Machine
+├── nerv hub daemon (systemd user service, localhost:19820)
+│   ├── Routes tasks between agents by skill ID
+│   ├── SSE streaming at GET /rpc/stream?agent_id=<id>
+│   └── Task persistence in ~/.nerv/hub-state/
+│
+├── Project A
+│   ├── opencode instance → nerv-memory (local ChromaDB)
+│   └── opencode instance → nerv-hub (RPC to daemon)
+│
+├── Project B
+│   ├── opencode instance → nerv-memory (local ChromaDB)
+│   └── opencode instance → nerv-hub (RPC to daemon)
+│
+└── Project C ...
+```
+
+- **One hub daemon per machine** — all agents share a single task router
+- **Per-project memory** — each project has its own ChromaDB in `.nerv/memory/`
+- **Per-project MCP servers** — opencode launches `nerv-memory` and `nerv-hub` as project-local processes
+
+### Task Flow
+
+1. Agent A in Project A delegates: `delegate_task(skill_id="implementation", description="fix bug #42")`
+2. Hub routes to Agent B (assigned by skill matching)
+3. Agent B polls: `check_pending_tasks()` → sees the task
+4. Agent B completes: `complete_task(task_id, result)` → hub marks COMPLETED
+5. SSE subscribers notified in real-time
+
+### opencode Go/Zen Scaling Strategy
+
+opencode Go subscription ($10/mo, $60/mo cap) provides per-request limits that constrain concurrent agent throughput. Choose models by workload:
+
+| Workload | Model | Est. requests/mo (Go) | Cost efficiency |
+|----------|-------|----------------------|-----------------|
+| Bulk/boilerplate | DeepSeek V4 Flash | 158,150 | Cheapest |
+| Standard coding | Qwen3.5 Plus | 50,500 | Great value |
+| Complex tasks | GLM-5.1 / DeepSeek V4 Pro | 4,300 / 17,150 | Balanced |
+| Critical/blocking | Zen free models | Unlimited (free) | Zero cost |
+
+**Scaling tips:**
+- Reserve paid models for Hub-routed tasks; use free Zen models for agent-internal work
+- `NERV_MEMORY_PROFILE=safe` disables destructive tools, saving tokens on safety checks
+- Enable "Use balance" in opencode Go console to fall back to Zen credits when Go limit is hit
+- Monitor usage: `opencode stats --days 7`
+
+## Updating NERV
+
+```bash
+cd /path/to/nerv
+git pull
+uv sync
+# If installed globally, reinstall to pick up source changes:
+uv tool install --reinstall .
+```
+
+To update scaffolding in existing projects:
+
+```bash
+cd /path/to/your/project
+nerv update [--dry-run] [--force-commands] [--only <files>]
+```
+
+The daemon systemd unit is refreshed on update. `opencode.json` is JSON-merged (adds env vars without clobbering custom config).
+
 ## CI/CD Integration
 
-NERV's memory and hub components are local-only and not suitable for CI/CD. However, the CLI can be used for scaffolding:
+NERV's memory and hub components are local-only. Use the CLI for scaffolding:
 
 ```yaml
-# Example: GitHub Actions step for scaffolding
 - name: Setup NERV
   run: |
     curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -90,32 +191,6 @@ NERV's memory and hub components are local-only and not suitable for CI/CD. Howe
 
 ```bash
 uv run pytest
-```
-
-NERV's test suite uses `pytest` with `pytest-asyncio`. Tests are in `tests/`.
-
-## Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `NERV_LOG_LEVEL` | `INFO` | Log level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) |
-| `NERV_AGENT_SOURCE` | `unknown` | Agent identifier for memory scope |
-| `NERV_HUB_URL` | `http://127.0.0.1:19820` | Hub URL for MCP delegation |
-| `NERV_MEMORY_PROFILE` | `full` | Memory tool availability (`full` or `safe`) |
-
-## Updating NERV
-
-```bash
-cd /path/to/nerv
-git pull
-uv sync
-```
-
-To update scaffolding in existing projects:
-
-```bash
-cd /path/to/your/project
-nerv update [--dry-run] [--force-commands] [--only <files>]
 ```
 
 ## Troubleshooting
@@ -130,9 +205,15 @@ ss -tlnp | grep 19820
 
 Kill the process or change the port in `.nerv/a2a-config.yaml`.
 
-### ChromaDB Corruption
+### Daemon Not Starting
 
-Delete the ChromaDB directory and restart:
+```bash
+nerv daemon status                    # check systemd status
+journalctl --user -u nerv-hub -f     # view systemd journal
+nerv daemon logs                      # tail hub log file (.nerv/logs/hub.log)
+```
+
+### ChromaDB Corruption
 
 ```bash
 rm -rf .nerv/memory/chroma/
@@ -144,6 +225,7 @@ On Python 3.14 or Windows, ONNXRuntime may not have a compatible wheel. NERV fal
 
 ### Hub Connection Refused
 
-1. Verify hub is running: `curl http://127.0.0.1:19820`
-2. Check `NERV_HUB_URL` matches your hub address
-3. Verify `.nerv/a2a-config.yaml` exists
+1. Verify hub daemon is running: `nerv daemon status`
+2. Check direct connection: `curl http://127.0.0.1:19820/health`
+3. Verify `NERV_HUB_URL` matches your hub address
+4. Check `.nerv/a2a-config.yaml` for port conflicts

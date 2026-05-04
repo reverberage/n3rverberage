@@ -82,6 +82,12 @@ class HubStateStore:
         self.settings = settings
         self.tasks_dir = settings.paths.hub_state_dir / "tasks"
         self.tasks_dir.mkdir(parents=True, exist_ok=True)
+        self._task_events: dict[str, asyncio.Event] = {}
+
+    def _get_event(self, task_id: str) -> asyncio.Event:
+        if task_id not in self._task_events:
+            self._task_events[task_id] = asyncio.Event()
+        return self._task_events[task_id]
 
     def create_task(
         self,
@@ -131,6 +137,9 @@ class HubStateStore:
             raise KeyError(task_id)
         updated = task.model_copy(update={"updated_at": datetime.now(UTC), **changes})
         self.save_task(updated)
+        event = self._task_events.get(task_id)
+        if event is not None:
+            event.set()
         return updated
 
     def _task_path(self, task_id: str) -> Path:
@@ -153,45 +162,74 @@ class HubStateStore:
         return tasks
 
     async def subscribe(self, task_id: str) -> AsyncGenerator[dict, None]:
-        """SSE subscription: yields task state on file changes.
+        """SSE subscription: yields task state on updates via asyncio.Event.
 
-        Polls task file mtime every 0.1s. Stops when task reaches
-        terminal state (completed/canceled/failed).
+        Yields initial state immediately, then waits for update_task()
+        to fire the event. Stops when task reaches terminal state.
         """
         path = self._task_path(task_id)
-
         if not path.exists():
             return
 
-        last_mtime = None
         terminal_states = {TaskState.COMPLETED, TaskState.CANCELED, TaskState.FAILED}
+        event = self._get_event(task_id)
 
-        while True:
-            if not path.exists():
-                return
+        try:
+            task = self.load_task(task_id)
+            if task is not None:
+                yield _task_sse_event(task)
+                if task.state in terminal_states:
+                    return
 
-            current_mtime = path.stat().st_mtime
-
-            if last_mtime is None or current_mtime != last_mtime:
-                last_mtime = current_mtime
-
-                try:
-                    task = HubTaskRecord.model_validate_json(
-                        path.read_text(encoding="utf-8")
-                    )
-                    yield {
-                        "id": task.id,
-                        "state": task.state.value,
-                        "assigned_agent": task.assigned_agent,
-                        "target_skill": task.target_skill,
-                        "description": task.description,
-                        "updated_at": task.updated_at.isoformat(),
-                    }
-
+            while True:
+                await event.wait()
+                event.clear()
+                task = self.load_task(task_id)
+                if task is not None:
+                    yield _task_sse_event(task)
                     if task.state in terminal_states:
                         return
+        finally:
+            self._task_events.pop(task_id, None)
 
-                except Exception:
-                    pass
+    async def subscribe_agent(self, agent_id: str) -> AsyncGenerator[dict, None]:
+        """SSE subscription for all tasks assigned to an agent.
 
-            await asyncio.sleep(0.1)
+        Yields initial state for existing tasks, then yields updates
+        as they occur. Stops on generator close (client disconnect).
+        """
+        seen_ids: set[str] = set()
+        agent_id_lower = agent_id.lower()
+
+        def _tasks_for_agent() -> list[HubTaskRecord]:
+            return [
+                t
+                for t in self.list_tasks()
+                if t.assigned_agent.lower() == agent_id_lower
+            ]
+
+        for task in _tasks_for_agent():
+            seen_ids.add(task.id)
+            yield _task_sse_event(task)
+
+        while True:
+            await asyncio.sleep(0.5)
+            current_tasks = _tasks_for_agent()
+            for task in current_tasks:
+                if task.id not in seen_ids:
+                    seen_ids.add(task.id)
+                    yield _task_sse_event(task)
+
+            if len(seen_ids) != len(current_tasks):
+                seen_ids = {t.id for t in current_tasks}
+
+
+def _task_sse_event(task: HubTaskRecord) -> dict:
+    return {
+        "id": task.id,
+        "state": task.state.value,
+        "assigned_agent": task.assigned_agent,
+        "target_skill": task.target_skill,
+        "description": task.description,
+        "updated_at": task.updated_at.isoformat(),
+    }

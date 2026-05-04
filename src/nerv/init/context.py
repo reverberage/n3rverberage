@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from enum import StrEnum
+from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, field_validator
 
@@ -24,6 +25,7 @@ class ProjectContext(BaseModel):
 
     project_name: str
     stack: Stack
+    project_root: Path
     nerv_version: str
     timestamp: str
 
@@ -35,7 +37,9 @@ class ProjectContext(BaseModel):
         return v
 
     @classmethod
-    def build(cls, project_name: str, stack: Stack) -> ProjectContext:
+    def build(
+        cls, project_name: str, stack: Stack, project_root: Path
+    ) -> ProjectContext:
         from importlib.metadata import PackageNotFoundError, version
 
         try:
@@ -48,6 +52,7 @@ class ProjectContext(BaseModel):
         return cls(
             project_name=project_name,
             stack=stack,
+            project_root=project_root,
             nerv_version=nerv_version,
             timestamp=timestamp,
         )
@@ -56,6 +61,7 @@ class ProjectContext(BaseModel):
         return {
             "project_name": self.project_name,
             "stack": self.stack.value,
+            "project_root": str(self.project_root),
             "nerv_version": self.nerv_version,
             "timestamp": self.timestamp,
         }
