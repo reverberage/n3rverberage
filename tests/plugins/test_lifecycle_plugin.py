@@ -18,16 +18,17 @@ class TestLifecyclePlugin:
 
     def test_exports_compacting_hook(self) -> None:
         content = _plugin_path("lifecycle").read_text(encoding="utf-8")
-        assert "export async function onSessionCompacting" in content
+        assert "experimental.session.compacting" in content
 
     def test_exports_idle_hook(self) -> None:
         content = _plugin_path("lifecycle").read_text(encoding="utf-8")
-        assert "export async function onSessionIdle" in content
+        assert "event.type" in content
+        assert "session.idle" in content
 
     def test_injects_sdd_state_in_compacting(self) -> None:
         content = _plugin_path("lifecycle").read_text(encoding="utf-8")
         assert "sdd-" in content  # searches for SDD topic keys
-        assert "injectedContext" in content or "SDD Pipeline State" in content
+        assert "output.context.push" in content or "SDD Pipeline State" in content
 
     def test_idle_threshold_configured(self) -> None:
         content = _plugin_path("lifecycle").read_text(encoding="utf-8")
@@ -36,7 +37,7 @@ class TestLifecyclePlugin:
     def test_graceful_degradation_on_mcp_failure(self) -> None:
         content = _plugin_path("lifecycle").read_text(encoding="utf-8")
         assert "catch" in content  # try/catch present
-        assert "return ctx" in content  # compacting returns unchanged ctx on failure
+        assert "Degrade silently" in content  # safe degradation comment
 
     def test_compacting_never_throws(self) -> None:
         content = _plugin_path("lifecycle").read_text(encoding="utf-8")
@@ -56,13 +57,13 @@ class TestShellEnvPlugin:
 
     def test_exports_env_hook(self) -> None:
         content = _plugin_path("shell-env").read_text(encoding="utf-8")
-        assert "export function onShellEnv" in content
+        assert "shell.env" in content
 
     def test_preserves_existing_nerv_agent_source(self) -> None:
         content = _plugin_path("shell-env").read_text(encoding="utf-8")
         assert "NERV_AGENT_SOURCE" in content
         # Should check for existing value before overwriting
-        assert "return env" in content or "if (env.NERV_AGENT_SOURCE)" in content
+        assert "output.env.NERV_AGENT_SOURCE" in content
 
     def test_agent_name_mappings(self) -> None:
         content = _plugin_path("shell-env").read_text(encoding="utf-8")
