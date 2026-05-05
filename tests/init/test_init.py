@@ -140,11 +140,12 @@ class TestInit:
         assert shell_env.is_file(), f"Missing {shell_env}"
 
         lc_content = lifecycle.read_text(encoding="utf-8")
-        assert "onSessionCompacting" in lc_content
-        assert "onSessionIdle" in lc_content
+        assert "NervLifecycle" in lc_content
+        assert "buildSDDSummary" in lc_content
+        assert "experimental.session.compacting" in lc_content
 
         se_content = shell_env.read_text(encoding="utf-8")
-        assert "onShellEnv" in se_content
+        assert "NervShellEnv" in se_content
         assert "opencode:nerv" in se_content
 
     def test_tools_scaffolded_on_init(self, tmp_path: Path) -> None:
