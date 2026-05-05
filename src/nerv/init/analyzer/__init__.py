@@ -6,6 +6,7 @@ import logging
 from pathlib import Path
 
 from nerv.init.analyzer.frameworks import FrameworkDetector
+from nerv.init.analyzer.mcp_recommender import MCPRecommender
 from nerv.init.analyzer.profile import ProjectProfile
 from nerv.init.analyzer.structure import StructureDetector
 from nerv.init.analyzer.tools import ToolDetector
@@ -41,10 +42,17 @@ def analyze_project(root: Path, context: ProjectContext) -> ProjectProfile:
 
         structure = _SI()
 
+    try:
+        mcp_servers = MCPRecommender().detect(root, stack, structure)
+    except Exception as exc:
+        logger.debug("MCP recommender failed: %s", exc)
+        mcp_servers = []
+
     return ProjectProfile(
         stack=stack,
         project_name=context.project_name,
         frameworks=frameworks,
         tools=tools,
         structure=structure,
+        mcp_servers=mcp_servers,
     )

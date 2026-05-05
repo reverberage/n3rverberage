@@ -29,6 +29,19 @@ class ToolCommand:
 
 
 @dataclass(frozen=True)
+class MCPServerInfo:
+    """A recommended MCP server for the project's opencode.json config."""
+
+    name: str
+    type: str  # "local" or "remote"
+    command: list[str] | None = None
+    url: str | None = None
+    environment: dict[str, str] | None = None
+    description: str = ""
+    disabled: bool = False
+
+
+@dataclass(frozen=True)
 class StructureInfo:
     """Detected project directory structure."""
 
@@ -36,6 +49,7 @@ class StructureInfo:
     has_tests_dir: bool = False
     has_docs_dir: bool = False
     has_scripts_dir: bool = False
+    has_web_files: bool = False
     entry_points: list[str] = field(default_factory=list)
     key_dirs: list[str] = field(default_factory=list)
 
@@ -50,6 +64,7 @@ class ProjectProfile(BaseModel):
     frameworks: list[FrameworkInfo] = field(default_factory=list)
     tools: list[ToolCommand] = field(default_factory=list)
     structure: StructureInfo = field(default_factory=StructureInfo)
+    mcp_servers: list[MCPServerInfo] = field(default_factory=list)
 
     def to_j2_context(self) -> dict:
         """Flatten profile into Jinja2-compatible template context."""
@@ -76,11 +91,25 @@ class ProjectProfile(BaseModel):
                 "has_tests_dir": self.structure.has_tests_dir,
                 "has_docs_dir": self.structure.has_docs_dir,
                 "has_scripts_dir": self.structure.has_scripts_dir,
+                "has_web_files": self.structure.has_web_files,
                 "entry_points": self.structure.entry_points,
                 "key_dirs": self.structure.key_dirs,
             },
             "profile_has_frameworks": len(self.frameworks) > 0,
             "profile_has_tools": len(self.tools) > 0,
+            "profile_mcp_servers": [
+                {
+                    "name": s.name,
+                    "type": s.type,
+                    "command": s.command,
+                    "url": s.url,
+                    "environment": s.environment,
+                    "description": s.description,
+                    "disabled": s.disabled,
+                }
+                for s in self.mcp_servers
+            ],
+            "profile_has_mcp_servers": len(self.mcp_servers) > 0,
         }
 
     def get_tool(self, name: str) -> ToolCommand | None:

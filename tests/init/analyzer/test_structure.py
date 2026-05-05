@@ -96,3 +96,34 @@ nerv-gui = "nerv.gui:main"
         result = StructureDetector().detect(tmp_path, Stack.PYTHON)
         assert result.has_src_dir is True
         assert result.entry_points == []
+
+    def test_web_files_detected_from_html(self, tmp_path: Path) -> None:
+        (tmp_path / "index.html").write_text("<html></html>")
+        result = StructureDetector().detect(tmp_path, Stack.GENERIC)
+        assert result.has_web_files is True
+
+    def test_web_files_detected_from_css(self, tmp_path: Path) -> None:
+        (tmp_path / "styles.css").write_text("body {}")
+        result = StructureDetector().detect(tmp_path, Stack.GENERIC)
+        assert result.has_web_files is True
+
+    def test_web_files_detected_from_js(self, tmp_path: Path) -> None:
+        (tmp_path / "app.js").write_text("console.log('hi')")
+        result = StructureDetector().detect(tmp_path, Stack.GENERIC)
+        assert result.has_web_files is True
+
+    def test_web_dirs_detected(self, tmp_path: Path) -> None:
+        (tmp_path / "css").mkdir()
+        (tmp_path / "js").mkdir()
+        result = StructureDetector().detect(tmp_path, Stack.GENERIC)
+        assert result.has_web_files is True
+
+    def test_web_assets_dir_detected(self, tmp_path: Path) -> None:
+        (tmp_path / "assets").mkdir()
+        result = StructureDetector().detect(tmp_path, Stack.GENERIC)
+        assert result.has_web_files is True
+
+    def test_no_web_files_in_bare_project(self, tmp_path: Path) -> None:
+        (tmp_path / "src").mkdir()
+        result = StructureDetector().detect(tmp_path, Stack.PYTHON)
+        assert result.has_web_files is False

@@ -20,6 +20,12 @@ _STRUCTURE_DIRS: dict[str, str] = {
 }
 
 
+_WEB_EXTENSIONS: frozenset[str] = frozenset(
+    {".html", ".htm", ".css", ".js", ".mjs", ".cjs"}
+)
+_WEB_DIRS: frozenset[str] = frozenset({"css", "js", "assets", "public", "static"})
+
+
 class StructureDetector:
     """Detect project directory structure."""
 
@@ -28,6 +34,7 @@ class StructureDetector:
         has_tests_dir = False
         has_docs_dir = False
         has_scripts_dir = False
+        has_web_files = False
         key_dirs: list[str] = []
 
         try:
@@ -36,6 +43,10 @@ class StructureDetector:
             return StructureInfo()
 
         for entry in entries:
+            if entry.is_file() and entry.suffix.lower() in _WEB_EXTENSIONS:
+                has_web_files = True
+                continue
+
             if not entry.is_dir():
                 continue
             name = entry.name
@@ -43,6 +54,9 @@ class StructureDetector:
                 continue
             if name.startswith("."):
                 continue
+
+            if name.lower() in _WEB_DIRS:
+                has_web_files = True
 
             attr = _STRUCTURE_DIRS.get(name.lower())
             if attr == "has_src_dir":
@@ -63,6 +77,7 @@ class StructureDetector:
             has_tests_dir=has_tests_dir,
             has_docs_dir=has_docs_dir,
             has_scripts_dir=has_scripts_dir,
+            has_web_files=has_web_files,
             entry_points=entry_points,
             key_dirs=sorted(key_dirs),
         )

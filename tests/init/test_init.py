@@ -189,10 +189,10 @@ class TestInit:
         assert oc_json.is_file()
         data = json.loads(oc_json.read_text(encoding="utf-8"))
 
-        assert "plugins" in data
-        assert len(data["plugins"]) >= 2
-        assert any("nerv-lifecycle" in p for p in data["plugins"])
-        assert any("nerv-shell-env" in p for p in data["plugins"])
+        assert "plugin" in data
+        assert len(data["plugin"]) >= 2
+        assert any("nerv-lifecycle" in p for p in data["plugin"])
+        assert any("nerv-shell-env" in p for p in data["plugin"])
 
         instructions = data.get("instructions", [])
         assert "AGENTS.md" in instructions
@@ -201,7 +201,7 @@ class TestInit:
         assert any("docs" in i for i in instructions)
 
         assert "tools" in data
-        assert data["tools"].get("websearch", {}).get("disable") is False
+        assert data["tools"].get("websearch") is True
 
 
 class TestUpdate:
