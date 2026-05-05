@@ -10,6 +10,8 @@
  *   "git-ops"       → "opencode:git-ops"
  *   "github-ops"    → "opencode:github-ops"
  *   everything else → "opencode:unknown"
+ *
+ * Uses the OpenCode 1.14.x plugin API: a factory function returning hooks.
  */
 
 const AGENT_SOURCE_MAP = {
@@ -21,20 +23,30 @@ const AGENT_SOURCE_MAP = {
 function deriveSource(agentName) {
   if (!agentName || typeof agentName !== "string") return "opencode:unknown";
   if (AGENT_SOURCE_MAP[agentName]) return AGENT_SOURCE_MAP[agentName];
-  if (agentName.startsWith("sdd-")) return `opencode:sdd-${agentName.replace("sdd-", "")}`;
+  if (agentName.startsWith("sdd-"))
+    return `opencode:sdd-${agentName.replace("sdd-", "")}`;
   return "opencode:unknown";
 }
 
-/** shell.env hook — runs before each shell subprocess. */
-export function onShellEnv(env, agentName) {
-  try {
-    // Never overwrite an already-set value
-    if (env.NERV_AGENT_SOURCE) return env;
+/**
+ * Plugin factory (OpenCode 1.14.x API)
+ */
+export const NervShellEnv = async (_ctx) => {
+  return {
+    /** shell.env hook — runs before each shell subprocess. */
+    "shell.env": async (input, output) => {
+      try {
+        // Never overwrite an already-set value
+        if (output.env.NERV_AGENT_SOURCE) return;
 
-    const source = deriveSource(agentName);
-    return { ...env, NERV_AGENT_SOURCE: source };
-  } catch (err) {
-    // Degrade silently — never block OpenCode
-    return env;
-  }
-}
+        const agentName = input.agentName ?? input.agent ?? "";
+        const source = deriveSource(agentName);
+        output.env.NERV_AGENT_SOURCE = source;
+      } catch {
+        // Degrade silently — never block OpenCode
+      }
+    },
+  };
+};
+
+export default NervShellEnv;

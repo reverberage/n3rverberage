@@ -14,7 +14,7 @@ import { z } from "zod";
 // ──────────────────────────────────────────────
 const MEMORY_MCP_URL = "http://127.0.0.1:19821";
 
-async function memoryRpc(method: string, params: Record<string, unknown> = {}): Promise<any> {
+async function memoryRpc(method, params = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 1000);
 
@@ -40,7 +40,7 @@ async function memoryRpc(method: string, params: Record<string, unknown> = {}): 
       return { error: data.error.message ?? String(data.error) };
     }
     return data.result;
-  } catch (err: any) {
+  } catch (err) {
     if (err.name === "AbortError") return { error: "timeout" };
     return { error: err.message ?? "unavailable" };
   } finally {
@@ -53,7 +53,7 @@ async function memoryRpc(method: string, params: Record<string, unknown> = {}): 
 // ──────────────────────────────────────────────
 const HUB_MCP_URL = "http://127.0.0.1:19820";
 
-async function hubRpc(method: string, params: Record<string, unknown> = {}): Promise<any> {
+async function hubRpc(method, params = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 1000);
 
@@ -79,7 +79,7 @@ async function hubRpc(method: string, params: Record<string, unknown> = {}): Pro
       return { error: data.error.message ?? String(data.error) };
     }
     return data.result;
-  } catch (err: any) {
+  } catch (err) {
     if (err.name === "AbortError") return { error: "timeout" };
     return { error: err.message ?? "unavailable" };
   } finally {
@@ -94,7 +94,7 @@ async function hubRpc(method: string, params: Record<string, unknown> = {}): Pro
 export const nerv_memory_stats = {
   description: "Return aggregate counts for active memories in NERV memory store.",
   parameters: z.object({}),
-  execute: async (_params: Record<string, never>): Promise<string> => {
+  execute: async (_params) => {
     const result = await memoryRpc("memory_stats", {});
     if (result.error) {
       return JSON.stringify({ error: "memory_stats unavailable", detail: result.error });
@@ -108,7 +108,7 @@ export const nerv_task_status = {
   parameters: z.object({
     task_id: z.string().describe("The task ID to look up"),
   }),
-  execute: async (params: { task_id: string }): Promise<string> => {
+  execute: async (params) => {
     const result = await hubRpc("get_task", { task_id: params.task_id });
     if (result.error) {
       return JSON.stringify({ error: "task_status unavailable", detail: result.error });
@@ -120,7 +120,7 @@ export const nerv_task_status = {
 export const nerv_hub_health = {
   description: "Check whether the NERV A2A hub is reachable and healthy.",
   parameters: z.object({}),
-  execute: async (_params: Record<string, never>): Promise<string> => {
+  execute: async (_params) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 1000);
 
@@ -133,7 +133,7 @@ export const nerv_hub_health = {
       }
       const data = await res.json();
       return JSON.stringify({ connected: true, ...data });
-    } catch (err: any) {
+    } catch (err) {
       return JSON.stringify({ connected: false });
     } finally {
       clearTimeout(timeout);
@@ -150,7 +150,7 @@ export const nerv_check_pending_tasks = {
       .optional()
       .describe("The agent ID to check. If omitted, uses NERV_AGENT_SOURCE from environment."),
   }),
-  execute: async (params: { agent_id?: string }): Promise<string> => {
+  execute: async (params) => {
     const agentId = params.agent_id ?? process.env.NERV_AGENT_SOURCE ?? "unknown";
     const result = await hubRpc("list_pending_tasks", { agent_id: agentId });
     if (result.error) {
