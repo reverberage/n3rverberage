@@ -5,11 +5,11 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory={{ project_root }}
-ExecStart={{ nerv_binary }} hub start
+ExecStart={{ n3rv_binary }} hub start
 Restart=on-failure
 RestartSec=5
-StandardOutput=append:{{ project_root }}/.nerv/logs/hub.log
-StandardError=append:{{ project_root }}/.nerv/logs/hub.log
+StandardOutput=append:{{ project_root }}/.n3rv/logs/hub.log
+StandardError=append:{{ project_root }}/.n3rv/logs/hub.log
 
 [Install]
 WantedBy=default.target

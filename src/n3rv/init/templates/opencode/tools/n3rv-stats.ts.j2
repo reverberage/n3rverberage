@@ -12,7 +12,7 @@
 import { tool } from "@opencode-ai/plugin";
 
 // ──────────────────────────────────────────────
-// Internal: call nerv-memory MCP via HTTP POST
+// Internal: call n3rv-memory MCP via HTTP POST
 // ──────────────────────────────────────────────
 const MEMORY_MCP_URL = "http://127.0.0.1:19821";
 
@@ -51,7 +51,7 @@ async function memoryRpc(method: string, params: Record<string, unknown> = {}) {
 }
 
 // ──────────────────────────────────────────────
-// Internal: call nerv-hub MCP via HTTP POST
+// Internal: call n3rv-hub MCP via HTTP POST
 // ──────────────────────────────────────────────
 const HUB_MCP_URL = "http://127.0.0.1:19820";
 
@@ -145,15 +145,15 @@ export const nerv_hub_health = tool({
 
 export const nerv_check_pending_tasks = tool({
   description:
-    "List all pending tasks assigned to an agent. Falls back to NERV_AGENT_SOURCE env var if agent_id omitted.",
+    "List all pending tasks assigned to an agent. Falls back to N3RV_AGENT_SOURCE env var if agent_id omitted.",
   args: {
     agent_id: tool.schema
       .string()
       .optional()
-      .describe("The agent ID to check. If omitted, uses NERV_AGENT_SOURCE from environment."),
+      .describe("The agent ID to check. If omitted, uses N3RV_AGENT_SOURCE from environment."),
   },
   async execute(args) {
-    const agentId = args.agent_id ?? process.env.NERV_AGENT_SOURCE ?? "unknown";
+    const agentId = args.agent_id ?? process.env.N3RV_AGENT_SOURCE ?? "unknown";
     const result = await hubRpc("list_pending_tasks", { agent_id: agentId });
     if (result.error) {
       return JSON.stringify({ error: "check_pending_tasks unavailable", detail: result.error });
