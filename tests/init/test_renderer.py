@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from nerv.init.renderer import TemplateEngine, TemplateRenderError
+from n3rv.init.renderer import TemplateEngine, TemplateRenderError
 
 
 @pytest.fixture

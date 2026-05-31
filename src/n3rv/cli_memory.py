@@ -7,9 +7,9 @@ from rich.columns import Columns
 from rich.console import Console
 from rich.table import Table
 
-from nerv.config import load_runtime_settings
-from nerv.mcp.memory_server import MemoryService
-from nerv.util import format_age
+from n3rv.config import load_runtime_settings
+from n3rv.mcp.memory_server import MemoryService
+from n3rv.util import format_age
 
 memory_app = typer.Typer(name="memory", help="Inspect persistent engineering memories")
 console = Console()

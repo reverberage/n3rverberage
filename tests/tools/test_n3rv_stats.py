@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def _tools_path() -> Path:
-    return Path(__file__).resolve().parents[2] / ".opencode" / "tools" / "nerv-stats.ts"
+    return Path(__file__).resolve().parents[2] / ".opencode" / "tools" / "n3rv-stats.ts"
 
 
 class TestNervStatsTools:
@@ -42,7 +42,7 @@ class TestNervStatsTools:
 
     def test_check_pending_tasks_falls_back_to_env(self) -> None:
         content = _tools_path().read_text(encoding="utf-8")
-        assert "NERV_AGENT_SOURCE" in content or "agent_id" in content
+        assert "N3RV_AGENT_SOURCE" in content or "agent_id" in content
 
     def test_all_tools_use_tool_helper(self) -> None:
         content = _tools_path().read_text(encoding="utf-8")

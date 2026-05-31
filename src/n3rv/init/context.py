@@ -41,7 +41,7 @@ class ProjectContext(BaseModel):
         from importlib.metadata import PackageNotFoundError, version
 
         try:
-            nerv_version = version("nerv")
+            nerv_version = version("n3rv")
         except PackageNotFoundError:
             nerv_version = "dev"
 
@@ -60,6 +60,6 @@ class ProjectContext(BaseModel):
             "project_name": self.project_name,
             "stack": self.stack.value,
             "project_root": str(self.project_root),
-            "nerv_version": self.nerv_version,
+            "nerv_version": self.n3rv_version,
             "timestamp": self.timestamp,
         }

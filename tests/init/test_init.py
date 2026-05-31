@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nerv.init import run_init
-from nerv.init.update import run_update
+from n3rv.init import run_init
+from n3rv.init.update import run_update
 
 
 def _write_fastapi_pyproject(root: Path) -> None:
@@ -65,7 +65,7 @@ class TestInit:
         _write_fastapi_pyproject(tmp_path)
         run_init(tmp_path, project_name=None, stack_override=None, force=True)
 
-        nerv_agent = tmp_path / ".opencode" / "agents" / "nerv.md"
+        nerv_agent = tmp_path / ".opencode" / "agents" / "n3rv.md"
         assert nerv_agent.exists()
         agent_content = nerv_agent.read_text(encoding="utf-8")
         assert "mode: primary" in agent_content
@@ -133,8 +133,8 @@ class TestInit:
         _write_fastapi_pyproject(tmp_path)
         run_init(tmp_path, project_name=None, stack_override=None, force=True)
 
-        lifecycle = tmp_path / ".opencode" / "plugins" / "nerv-lifecycle.js"
-        shell_env = tmp_path / ".opencode" / "plugins" / "nerv-shell-env.js"
+        lifecycle = tmp_path / ".opencode" / "plugins" / "n3rv-lifecycle.js"
+        shell_env = tmp_path / ".opencode" / "plugins" / "n3rv-shell-env.js"
         assert lifecycle.is_file(), f"Missing {lifecycle}"
         assert shell_env.is_file(), f"Missing {shell_env}"
 
@@ -145,13 +145,13 @@ class TestInit:
 
         se_content = shell_env.read_text(encoding="utf-8")
         assert "NervShellEnv" in se_content
-        assert "opencode:nerv" in se_content
+        assert "opencode:n3rv" in se_content
 
     def test_tools_scaffolded_on_init(self, tmp_path: Path) -> None:
         _write_fastapi_pyproject(tmp_path)
         run_init(tmp_path, project_name=None, stack_override=None, force=True)
 
-        stats_ts = tmp_path / ".opencode" / "tools" / "nerv-stats.ts"
+        stats_ts = tmp_path / ".opencode" / "tools" / "n3rv-stats.ts"
         package_json = tmp_path / ".opencode" / "package.json"
         assert stats_ts.is_file(), f"Missing {stats_ts}"
         assert package_json.is_file(), f"Missing {package_json}"
@@ -191,8 +191,8 @@ class TestInit:
 
         assert "plugin" in data
         assert len(data["plugin"]) >= 2
-        assert any("nerv-lifecycle" in p for p in data["plugin"])
-        assert any("nerv-shell-env" in p for p in data["plugin"])
+        assert any("n3rv-lifecycle" in p for p in data["plugin"])
+        assert any("n3rv-shell-env" in p for p in data["plugin"])
 
         instructions = data.get("instructions", [])
         assert "AGENTS.md" in instructions
@@ -238,7 +238,7 @@ class TestUpdate:
         _write_fastapi_pyproject(tmp_path)
         run_init(tmp_path, project_name=None, stack_override=None, force=True)
 
-        nerv_agent = tmp_path / ".opencode" / "agents" / "nerv.md"
+        nerv_agent = tmp_path / ".opencode" / "agents" / "n3rv.md"
         nerv_agent.unlink()
         assert not nerv_agent.exists()
 

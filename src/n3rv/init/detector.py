@@ -8,7 +8,7 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
-from nerv.init.context import Stack
+from n3rv.init.context import Stack
 
 
 @dataclass

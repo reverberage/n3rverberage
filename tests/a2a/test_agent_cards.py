@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from nerv.a2a.agent_cards import (
+from n3rv.a2a.agent_cards import (
     default_agent_cards,
     hub_agent_card,
     opencode_agent_card,
@@ -29,7 +29,7 @@ def test_default_agent_cards(runtime_settings) -> None:
 
     expected = {"hub", "opencode"} | SDD_AGENTS
     assert set(cards) == expected
-    assert cards["hub"].name == "nerv-hub"
+    assert cards["hub"].name == "n3rv-hub"
     assert cards["opencode"].skills[0].id == "implementation"
     assert cards["hub"].capabilities.model_dump() == {"streaming": True}
     assert "authentication" not in cards["hub"].model_dump()
@@ -42,7 +42,7 @@ def test_card_urls_are_localhost(runtime_settings) -> None:
 
 def test_sdd_explorer_card(runtime_settings) -> None:
     card = sdd_explorer_card(runtime_settings)
-    assert card.name == "nerv-sdd-explorer"
+    assert card.name == "n3rv-sdd-explorer"
     assert len(card.skills) == 1
     assert card.skills[0].id == "sdd-explore"
     assert not card.capabilities.streaming
@@ -50,37 +50,37 @@ def test_sdd_explorer_card(runtime_settings) -> None:
 
 def test_sdd_proposer_card(runtime_settings) -> None:
     card = sdd_proposer_card(runtime_settings)
-    assert card.name == "nerv-sdd-proposer"
+    assert card.name == "n3rv-sdd-proposer"
     assert card.skills[0].id == "sdd-propose"
 
 
 def test_sdd_speccer_card(runtime_settings) -> None:
     card = sdd_speccer_card(runtime_settings)
-    assert card.name == "nerv-sdd-speccer"
+    assert card.name == "n3rv-sdd-speccer"
     assert card.skills[0].id == "sdd-spec"
 
 
 def test_sdd_designer_card(runtime_settings) -> None:
     card = sdd_designer_card(runtime_settings)
-    assert card.name == "nerv-sdd-designer"
+    assert card.name == "n3rv-sdd-designer"
     assert card.skills[0].id == "sdd-design"
 
 
 def test_sdd_task_planner_card(runtime_settings) -> None:
     card = sdd_task_planner_card(runtime_settings)
-    assert card.name == "nerv-sdd-task-planner"
+    assert card.name == "n3rv-sdd-task-planner"
     assert card.skills[0].id == "sdd-tasks"
 
 
 def test_sdd_verifier_card(runtime_settings) -> None:
     card = sdd_verifier_card(runtime_settings)
-    assert card.name == "nerv-sdd-verifier"
+    assert card.name == "n3rv-sdd-verifier"
     assert card.skills[0].id == "sdd-verify"
 
 
 def test_sdd_archiver_card(runtime_settings) -> None:
     card = sdd_archiver_card(runtime_settings)
-    assert card.name == "nerv-sdd-archiver"
+    assert card.name == "n3rv-sdd-archiver"
     assert card.skills[0].id == "sdd-archive"
 
 

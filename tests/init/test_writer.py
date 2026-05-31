@@ -6,7 +6,7 @@ import os
 import subprocess
 from pathlib import Path
 
-from nerv.init.writer import (
+from n3rv.init.writer import (
     MARKER_END,
     MARKER_START,
     WriteResult,
@@ -53,18 +53,18 @@ def test_marker_injection_replaces_between_markers(tmp_path: Path):
     target.write_text(f"""# User Content
 
 {MARKER_START}
-Old nerv section
+Old n3rv section
 {MARKER_END}
 
 More user content""")
 
-    result = write_file(target, "New nerv section", force=False, use_markers=True)
+    result = write_file(target, "New n3rv section", force=False, use_markers=True)
 
     assert result == WriteResult.UPDATED
     content = target.read_text()
     assert "User Content" in content
-    assert "New nerv section" in content
-    assert "Old nerv section" not in content
+    assert "New n3rv section" in content
+    assert "Old n3rv section" not in content
     assert "More user content" in content
 
 

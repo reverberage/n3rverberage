@@ -5,22 +5,22 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from nerv.init.analyzer import analyze_project
-from nerv.init.context import ProjectContext
-from nerv.init.detector import detect_stack
-from nerv.init.registry import write_registry
-from nerv.init.renderer import TemplateEngine
-from nerv.init.writer import (
+from n3rv.init.analyzer import analyze_project
+from n3rv.init.context import ProjectContext
+from n3rv.init.detector import detect_stack
+from n3rv.init.registry import write_registry
+from n3rv.init.renderer import TemplateEngine
+from n3rv.init.writer import (
     WriteResult,
     configure_git_hooks,
     write_file,
 )
 
 FILE_MANIFEST = [
-    ("nerv/a2a-config.yaml.j2", ".nerv/a2a-config.yaml", False, False),
+    ("nerv/a2a-config.yaml.j2", ".n3rv/a2a-config.yaml", False, False),
     (
-        "nerv/systemd/nerv-hub.service.j2",
-        ".nerv/systemd/nerv-hub.service",
+        "nerv/systemd/n3rv-hub.service.j2",
+        ".n3rv/systemd/n3rv-hub.service",
         False,
         False,
     ),
@@ -31,21 +31,21 @@ FILE_MANIFEST = [
     ("SECURITY.md.j2", "SECURITY.md", False, False),
     # Plugins
     (
-        "opencode/plugins/nerv-lifecycle.js.j2",
-        ".opencode/plugins/nerv-lifecycle.js",
+        "opencode/plugins/n3rv-lifecycle.js.j2",
+        ".opencode/plugins/n3rv-lifecycle.js",
         False,
         False,
     ),
     (
-        "opencode/plugins/nerv-shell-env.js.j2",
-        ".opencode/plugins/nerv-shell-env.js",
+        "opencode/plugins/n3rv-shell-env.js.j2",
+        ".opencode/plugins/n3rv-shell-env.js",
         False,
         False,
     ),
     # Custom tools
     (
-        "opencode/tools/nerv-stats.ts.j2",
-        ".opencode/tools/nerv-stats.ts",
+        "opencode/tools/n3rv-stats.ts.j2",
+        ".opencode/tools/n3rv-stats.ts",
         False,
         False,
     ),
@@ -220,8 +220,8 @@ def run_init(
 
         print(f"Detected: {stack_info.stack.value} ({stack_info.project_name})")
 
-        nerv_binary = shutil.which("nerv")
-        if not nerv_binary:
+        n3rv_binary = shutil.which("n3rv")
+        if not n3rv_binary:
             print("✗ Error: nerv binary not found in PATH")
             return 1
 
@@ -232,7 +232,7 @@ def run_init(
         render_ctx = {
             **context.to_dict(),
             **profile.to_j2_context(),
-            "nerv_binary": nerv_binary,
+            "n3rv_binary": n3rv_binary,
         }
 
         created_count = 0

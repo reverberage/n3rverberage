@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from nerv.init import run_init
+from n3rv.init import run_init
 
 
 @pytest.fixture

@@ -5,12 +5,12 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from nerv.init.analyzer.frameworks import FrameworkDetector
-from nerv.init.analyzer.mcp_recommender import MCPRecommender
-from nerv.init.analyzer.profile import ProjectProfile
-from nerv.init.analyzer.structure import StructureDetector
-from nerv.init.analyzer.tools import ToolDetector
-from nerv.init.context import ProjectContext
+from n3rv.init.analyzer.frameworks import FrameworkDetector
+from n3rv.init.analyzer.mcp_recommender import MCPRecommender
+from n3rv.init.analyzer.profile import ProjectProfile
+from n3rv.init.analyzer.structure import StructureDetector
+from n3rv.init.analyzer.tools import ToolDetector
+from n3rv.init.context import ProjectContext
 
 logger = logging.getLogger("nerv.init.analyzer")
 
@@ -38,7 +38,7 @@ def analyze_project(root: Path, context: ProjectContext) -> ProjectProfile:
         structure = StructureDetector().detect(root, stack)
     except Exception as exc:
         logger.debug("Structure detector failed: %s", exc)
-        from nerv.init.analyzer.profile import StructureInfo as _SI
+        from n3rv.init.analyzer.profile import StructureInfo as _SI
 
         structure = _SI()
 

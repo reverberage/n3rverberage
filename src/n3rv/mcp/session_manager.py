@@ -5,8 +5,8 @@ from __future__ import annotations
 import logging
 from uuid import uuid4
 
-from nerv.mcp.vector_store import VectorStore, _parse_timestamp
-from nerv.models.memory import (
+from n3rv.mcp.vector_store import VectorStore, _parse_timestamp
+from n3rv.models.memory import (
     ContextEntry,
     ContextResult,
     MemoryScope,

@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from nerv.init.analyzer.tools import ToolDetector
-from nerv.init.context import Stack
+from n3rv.init.analyzer.tools import ToolDetector
+from n3rv.init.context import Stack
 
 
 class TestToolDetectorPython:

@@ -13,8 +13,8 @@ from uuid import NAMESPACE_URL, uuid4, uuid5
 from chromadb import PersistentClient
 from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
 
-from nerv.config import RuntimeSettings
-from nerv.models.memory import MemoryScope
+from n3rv.config import RuntimeSettings
+from n3rv.models.memory import MemoryScope
 
 logger = logging.getLogger("nerv.mcp.vector")
 

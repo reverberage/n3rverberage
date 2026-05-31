@@ -11,14 +11,14 @@ from typing import Any
 
 from aiohttp import web
 
-from nerv.a2a.agent_cards import load_agent_cards
-from nerv.a2a.router import RoutingDecision, SkillNotFoundError, TaskRouter
-from nerv.a2a.state import DelegationArtifact, HubStateStore
-from nerv.config import RuntimeSettings
-from nerv.init.registry import SkillRegistry
-from nerv.mcp.memory_service import MemoryService
-from nerv.mcp.shared import ensure_runtime_directories, resolve_runtime_settings
-from nerv.models.a2a import TaskState
+from n3rv.a2a.agent_cards import load_agent_cards
+from n3rv.a2a.router import RoutingDecision, SkillNotFoundError, TaskRouter
+from n3rv.a2a.state import DelegationArtifact, HubStateStore
+from n3rv.config import RuntimeSettings
+from n3rv.init.registry import SkillRegistry
+from n3rv.mcp.memory_service import MemoryService
+from n3rv.mcp.shared import ensure_runtime_directories, resolve_runtime_settings
+from n3rv.models.a2a import TaskState
 
 logger = logging.getLogger("nerv.hub")
 
@@ -509,7 +509,7 @@ def _mark_working_tasks_failed(hub: A2AHub) -> None:
 
 
 def main() -> None:
-    log_level = os.environ.get("NERV_LOG_LEVEL", "INFO").upper()
+    log_level = os.environ.get("N3RV_LOG_LEVEL", "INFO").upper()
 
     settings = resolve_runtime_settings()
     ensure_runtime_directories(settings.paths)

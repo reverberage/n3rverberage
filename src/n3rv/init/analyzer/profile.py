@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 
 from pydantic import BaseModel, ConfigDict
 
-from nerv.init.context import Stack
+from n3rv.init.context import Stack
 
 
 @dataclass(frozen=True)

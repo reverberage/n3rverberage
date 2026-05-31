@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nerv.init.analyzer.mcp_recommender import MCPRecommender
-from nerv.init.analyzer.profile import StructureInfo
-from nerv.init.context import Stack
+from n3rv.init.analyzer.mcp_recommender import MCPRecommender
+from n3rv.init.analyzer.profile import StructureInfo
+from n3rv.init.context import Stack
 
 
 class TestMCPRecommender:

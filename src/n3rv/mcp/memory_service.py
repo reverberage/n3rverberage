@@ -10,11 +10,11 @@ import logging
 from collections import Counter
 from datetime import timedelta
 
-from nerv.config import RuntimeSettings
-from nerv.mcp.relation_store import RelationStore
-from nerv.mcp.session_manager import SessionManager
-from nerv.mcp.vector_store import VectorStore, _parse_timestamp
-from nerv.models.memory import (
+from n3rv.config import RuntimeSettings
+from n3rv.mcp.relation_store import RelationStore
+from n3rv.mcp.session_manager import SessionManager
+from n3rv.mcp.vector_store import VectorStore, _parse_timestamp
+from n3rv.models.memory import (
     ConflictCandidate,
     ContextEntry,
     JudgeResult,
@@ -84,7 +84,7 @@ class MemoryService:
         self._reset_search_nudge()
 
         if agent_source is None:
-            from nerv.mcp.shared import detect_agent_source
+            from n3rv.mcp.shared import detect_agent_source
 
             agent_source = detect_agent_source()
 
@@ -264,7 +264,7 @@ class MemoryService:
 
     def memory_delete(self, *, id: str, hard_delete: bool = False) -> dict:
         """Delete a memory by ID."""
-        profile = __import__("os").environ.get("NERV_MEMORY_PROFILE", "full")
+        profile = __import__("os").environ.get("N3RV_MEMORY_PROFILE", "full")
         if hard_delete and profile == "safe":
             raise PermissionError("hard_delete not allowed in safe profile")
 
@@ -356,7 +356,7 @@ class MemoryService:
         self.memory_get(source_id)
         self.memory_get(target_id)
 
-        from nerv.mcp.shared import detect_agent_source
+        from n3rv.mcp.shared import detect_agent_source
 
         relation_verdict = RelationVerdict(verdict)
         relation_id, is_new = self.relations.upsert(

@@ -41,7 +41,7 @@ def write_file(
     Returns:
         WriteResult indicating what happened
     """
-    from nerv.init.update import MARKER_END, MARKER_START
+    from n3rv.init.update import MARKER_END, MARKER_START
 
     if target.exists() and not force:
         if use_markers:
@@ -88,10 +88,10 @@ def configure_git_hooks(root: Path) -> bool:
     hooks_dir = git_dir / "hooks"
     hooks_dir.mkdir(parents=True, exist_ok=True)
 
-    # Create pre-push hook that delegates to .nerv/githooks/
+    # Create pre-push hook that delegates to .n3rv/githooks/
     pre_push = hooks_dir / "pre-push"
     pre_push.write_text(
-        "#!/bin/sh\n# NERV pre-push hook\nexec .nerv/githooks/pre-push\n",
+        "#!/bin/sh\n# NERV pre-push hook\nexec .n3rv/githooks/pre-push\n",
         encoding="utf-8",
     )
     pre_push.chmod(0o755)
@@ -125,7 +125,7 @@ def validate_markers(content: str) -> list[str]:
     Returns:
         List of warning strings (empty if no issues)
     """
-    from nerv.init.update import MARKER_END, MARKER_START
+    from n3rv.init.update import MARKER_END, MARKER_START
 
     start_count = content.count(MARKER_START)
     end_count = content.count(MARKER_END)

@@ -9,8 +9,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from nerv.config import RuntimeSettings
-from nerv.models.a2a import TaskState
+from n3rv.config import RuntimeSettings
+from n3rv.models.a2a import TaskState
 
 _TASK_ID_RE = re.compile(r"^task-[a-f0-9]{32}$")
 

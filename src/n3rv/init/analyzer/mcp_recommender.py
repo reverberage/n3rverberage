@@ -5,11 +5,11 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from nerv.init.analyzer.profile import (
+from n3rv.init.analyzer.profile import (
     MCPServerInfo,
     StructureInfo,
 )
-from nerv.init.context import Stack
+from n3rv.init.context import Stack
 
 logger = logging.getLogger("nerv.init.analyzer.mcp")
 

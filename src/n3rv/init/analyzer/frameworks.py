@@ -7,13 +7,13 @@ import re
 import tomllib
 from pathlib import Path
 
-from nerv.init.analyzer.mappings import (
+from n3rv.init.analyzer.mappings import (
     KNOWN_FRAMEWORKS,
     KNOWN_NPM_FRAMEWORKS,
     FrameworkMapping,
 )
-from nerv.init.analyzer.profile import FrameworkInfo
-from nerv.init.context import Stack
+from n3rv.init.analyzer.profile import FrameworkInfo
+from n3rv.init.context import Stack
 
 _PEP508_NAME_RE = re.compile(r"^[a-zA-Z0-9]([a-zA-Z0-9._-]*[a-zA-Z0-9])?")
 

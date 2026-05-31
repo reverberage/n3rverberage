@@ -5,9 +5,9 @@ from __future__ import annotations
 import tomllib
 from pathlib import Path
 
-from nerv.init.analyzer.mappings import EXCLUDED_DIRS
-from nerv.init.analyzer.profile import StructureInfo
-from nerv.init.context import Stack
+from n3rv.init.analyzer.mappings import EXCLUDED_DIRS
+from n3rv.init.analyzer.profile import StructureInfo
+from n3rv.init.context import Stack
 
 _STRUCTURE_DIRS: dict[str, str] = {
     "src": "has_src_dir",

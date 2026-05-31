@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from nerv.config import RuntimeSettings
-from nerv.models.a2a import AgentCapabilities, AgentSkill, NervAgentCard
+from n3rv.config import RuntimeSettings
+from n3rv.models.a2a import AgentCapabilities, AgentSkill, NervAgentCard
 
 
 def hub_agent_card(settings: RuntimeSettings) -> NervAgentCard:
     return NervAgentCard(
-        name="nerv-hub",
+        name="n3rv-hub",
         description="Orchestration hub - routes tasks between agents.",
         url=settings.a2a_base_url,
         version="0.1.0",
@@ -55,7 +55,7 @@ def opencode_agent_card(settings: RuntimeSettings) -> NervAgentCard:
 
 def sdd_explorer_card(settings: RuntimeSettings) -> NervAgentCard:
     return NervAgentCard(
-        name="nerv-sdd-explorer",
+        name="n3rv-sdd-explorer",
         description="Explore the codebase to build context for a planned change. First phase of the SDD workflow.",
         url=f"{settings.a2a_base_url}/agents/sdd-explorer",
         version="0.1.0",
@@ -72,7 +72,7 @@ def sdd_explorer_card(settings: RuntimeSettings) -> NervAgentCard:
 
 def sdd_proposer_card(settings: RuntimeSettings) -> NervAgentCard:
     return NervAgentCard(
-        name="nerv-sdd-proposer",
+        name="n3rv-sdd-proposer",
         description="Propose 2-3 solution approaches for a planned change, evaluating trade-offs and recommending one.",
         url=f"{settings.a2a_base_url}/agents/sdd-proposer",
         version="0.1.0",
@@ -89,7 +89,7 @@ def sdd_proposer_card(settings: RuntimeSettings) -> NervAgentCard:
 
 def sdd_speccer_card(settings: RuntimeSettings) -> NervAgentCard:
     return NervAgentCard(
-        name="nerv-sdd-speccer",
+        name="n3rv-sdd-speccer",
         description="Write a formal specification for a planned change: goals, acceptance criteria, constraints.",
         url=f"{settings.a2a_base_url}/agents/sdd-speccer",
         version="0.1.0",
@@ -106,7 +106,7 @@ def sdd_speccer_card(settings: RuntimeSettings) -> NervAgentCard:
 
 def sdd_designer_card(settings: RuntimeSettings) -> NervAgentCard:
     return NervAgentCard(
-        name="nerv-sdd-designer",
+        name="n3rv-sdd-designer",
         description="Write the technical design for a planned change: components, interfaces, data flows, edge cases.",
         url=f"{settings.a2a_base_url}/agents/sdd-designer",
         version="0.1.0",
@@ -123,7 +123,7 @@ def sdd_designer_card(settings: RuntimeSettings) -> NervAgentCard:
 
 def sdd_task_planner_card(settings: RuntimeSettings) -> NervAgentCard:
     return NervAgentCard(
-        name="nerv-sdd-task-planner",
+        name="n3rv-sdd-task-planner",
         description="Break the technical design into an ordered list of atomic, reviewable implementation tasks.",
         url=f"{settings.a2a_base_url}/agents/sdd-task-planner",
         version="0.1.0",
@@ -140,7 +140,7 @@ def sdd_task_planner_card(settings: RuntimeSettings) -> NervAgentCard:
 
 def sdd_verifier_card(settings: RuntimeSettings) -> NervAgentCard:
     return NervAgentCard(
-        name="nerv-sdd-verifier",
+        name="n3rv-sdd-verifier",
         description="Verify the implementation against the spec's acceptance criteria. Produces a pass/fail verdict.",
         url=f"{settings.a2a_base_url}/agents/sdd-verifier",
         version="0.1.0",
@@ -157,7 +157,7 @@ def sdd_verifier_card(settings: RuntimeSettings) -> NervAgentCard:
 
 def sdd_archiver_card(settings: RuntimeSettings) -> NervAgentCard:
     return NervAgentCard(
-        name="nerv-sdd-archiver",
+        name="n3rv-sdd-archiver",
         description="Archive all SDD artifacts for a change as a single completed record in memory.",
         url=f"{settings.a2a_base_url}/agents/sdd-archiver",
         version="0.1.0",

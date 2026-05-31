@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from nerv.init.context import ProjectContext, Stack
+from n3rv.init.context import ProjectContext, Stack
 
 
 def test_stack_enum_values():
@@ -24,8 +24,8 @@ def test_project_context_build():
 
     assert ctx.project_name == "myapp"
     assert ctx.stack == Stack.PYTHON
-    assert isinstance(ctx.nerv_version, str)
-    assert len(ctx.nerv_version) > 0
+    assert isinstance(ctx.n3rv_version, str)
+    assert len(ctx.n3rv_version) > 0
     assert isinstance(ctx.timestamp, str)
     assert "T" in ctx.timestamp  # ISO 8601 format
 

@@ -6,9 +6,9 @@ import json
 import tomllib
 from pathlib import Path
 
-from nerv.init.analyzer.mappings import TOOL_SCRIPT_KEYS
-from nerv.init.analyzer.profile import ToolCommand
-from nerv.init.context import Stack
+from n3rv.init.analyzer.mappings import TOOL_SCRIPT_KEYS
+from n3rv.init.analyzer.profile import ToolCommand
+from n3rv.init.context import Stack
 
 
 class ToolDetector:

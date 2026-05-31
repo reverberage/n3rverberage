@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from nerv.a2a.hub import A2AHub
-from nerv.config import RuntimePaths, RuntimeSettings
-from nerv.models.a2a import TaskState
+from n3rv.a2a.hub import A2AHub
+from n3rv.config import RuntimePaths, RuntimeSettings
+from n3rv.models.a2a import TaskState
 
 
 @pytest.fixture

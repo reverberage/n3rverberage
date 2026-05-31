@@ -8,12 +8,12 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
 
-from nerv.init.analyzer import analyze_project
-from nerv.init.context import ProjectContext
-from nerv.init.detector import detect_stack
-from nerv.init.registry import write_registry
-from nerv.init.renderer import TemplateEngine
-from nerv.init.writer import MARKER_END, MARKER_START, validate_markers, write_file
+from n3rv.init.analyzer import analyze_project
+from n3rv.init.context import ProjectContext
+from n3rv.init.detector import detect_stack
+from n3rv.init.registry import write_registry
+from n3rv.init.renderer import TemplateEngine
+from n3rv.init.writer import MARKER_END, MARKER_START, validate_markers, write_file
 
 
 class UpdateStrategy(StrEnum):
@@ -84,10 +84,10 @@ FILE_UPDATE_MANIFEST: list[UpdateEntry] = [
         "AGENTS.md",
         UpdateStrategy.MARKER_MERGE,
     ),
-    UpdateEntry("nerv/a2a-config.yaml.j2", ".nerv/a2a-config.yaml", UpdateStrategy.OVERWRITE),
+    UpdateEntry("nerv/a2a-config.yaml.j2", ".n3rv/a2a-config.yaml", UpdateStrategy.OVERWRITE),
     UpdateEntry(
-        "nerv/systemd/nerv-hub.service.j2",
-        ".nerv/systemd/nerv-hub.service",
+        "nerv/systemd/n3rv-hub.service.j2",
+        ".n3rv/systemd/n3rv-hub.service",
         UpdateStrategy.OVERWRITE,
     ),
     UpdateEntry("opencode.json.j2", "opencode.json", UpdateStrategy.JSON_MERGE),
@@ -302,12 +302,12 @@ def run_update(
         templates_dir = Path(__file__).parent / "templates"
         engine = TemplateEngine(templates_dir)
 
-        nerv_binary = shutil.which("nerv")
-        if not nerv_binary:
+        n3rv_binary = shutil.which("n3rv")
+        if not n3rv_binary:
             print("✗ Error: nerv binary not found in PATH")
             return 1
 
-        render_ctx = {**context.to_dict(), "nerv_binary": nerv_binary}
+        render_ctx = {**context.to_dict(), "n3rv_binary": n3rv_binary}
 
         profile = analyze_project(root, context)
         render_ctx.update(profile.to_j2_context())

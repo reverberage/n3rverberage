@@ -148,7 +148,7 @@ class SkillRegistry:
 
 def write_registry(root: Path) -> Path:
     registry = SkillRegistry.scan(root)
-    out = root / ".nerv" / "skill-registry.md"
+    out = root / ".n3rv" / "skill-registry.md"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(registry.to_markdown(), encoding="utf-8")
     logger.info("skill registry written to %s (%d skills)", out, len(registry.entries))

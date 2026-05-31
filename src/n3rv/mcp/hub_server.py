@@ -9,14 +9,14 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from nerv.mcp.shared import (
+from n3rv.mcp.shared import (
     build_mcp_server,
     detect_agent_source,
     hub_rpc,
     resolve_runtime_settings,
     result_payload,
 )
-from nerv.util import get_hub_url
+from n3rv.util import get_hub_url
 
 logger = logging.getLogger("nerv.mcp.hub")
 
@@ -31,7 +31,7 @@ _rpc = hub_rpc
 def _resolve_agent_ids(agent_id: str | None = None) -> list[str]:
     resolved = (agent_id or detect_agent_source()).strip().lower()
     if not resolved:
-        raise ValueError("agent_id is required when NERV_AGENT_SOURCE is not set")
+        raise ValueError("agent_id is required when N3RV_AGENT_SOURCE is not set")
     return list(dict.fromkeys(_AGENT_ID_ALIASES.get(resolved, (resolved,))))
 
 
@@ -60,7 +60,7 @@ def build_hub_server(project_root: Path | None = None):
     hub_url = get_hub_url(settings)
 
     server = build_mcp_server(
-        "nerv-hub",
+        "n3rv-hub",
         "Delegate tasks to other agents and poll for assigned work via the A2A hub.",
     )
 
@@ -97,7 +97,7 @@ def build_hub_server(project_root: Path | None = None):
     @server.tool(
         description=(
             "List tasks assigned to an agent that are not yet completed. "
-            "If agent_id is omitted, uses the current agent from NERV_AGENT_SOURCE."
+            "If agent_id is omitted, uses the current agent from N3RV_AGENT_SOURCE."
         )
     )
     async def list_pending_tasks(agent_id: str | None = None) -> list:
@@ -112,7 +112,7 @@ def build_hub_server(project_root: Path | None = None):
     @server.tool(
         description=(
             "Check pending tasks assigned to the current agent. "
-            "Pass agent_id explicitly when NERV_AGENT_SOURCE is not set."
+            "Pass agent_id explicitly when N3RV_AGENT_SOURCE is not set."
         )
     )
     async def check_pending_tasks(agent_id: str | None = None) -> list:

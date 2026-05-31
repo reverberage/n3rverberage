@@ -9,13 +9,13 @@ import httpx
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel
 
-from nerv.config import RuntimePaths, RuntimeSettings, load_runtime_settings
+from n3rv.config import RuntimePaths, RuntimeSettings, load_runtime_settings
 
 
 def ensure_runtime_directories(paths: RuntimePaths) -> None:
     for directory in (
         paths.memory_dir,
-        paths.nerv_dir,
+        paths.n3rv_dir,
         paths.hub_state_dir,
         paths.logs_dir,
     ):
@@ -29,7 +29,7 @@ def resolve_runtime_settings(project_root: Path | None = None) -> RuntimeSetting
 
 
 def detect_agent_source() -> str:
-    return os.environ.get("NERV_AGENT_SOURCE", "opencode")
+    return os.environ.get("N3RV_AGENT_SOURCE", "opencode")
 
 
 def result_payload(

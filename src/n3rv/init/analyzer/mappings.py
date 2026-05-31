@@ -180,7 +180,7 @@ EXCLUDED_DIRS: frozenset[str] = frozenset(
     {
         ".git",
         ".opencode",
-        ".nerv",
+        ".n3rv",
         ".githooks",
         ".mypy_cache",
         ".pytest_cache",

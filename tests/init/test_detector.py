@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from nerv.init.context import Stack
-from nerv.init.detector import detect_stack
+from n3rv.init.context import Stack
+from n3rv.init.detector import detect_stack
 
 
 def test_detect_python_from_pyproject_project_name(tmp_path: Path):

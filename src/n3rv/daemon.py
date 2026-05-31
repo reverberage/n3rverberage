@@ -5,7 +5,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from nerv.mcp.shared import resolve_runtime_settings
+from n3rv.mcp.shared import resolve_runtime_settings
 
 
 def _check_systemd() -> None:
@@ -23,7 +23,7 @@ def _systemctl(*args: str) -> subprocess.CompletedProcess:
 
 
 def _unit_path(root: Path) -> Path:
-    return root / ".nerv" / "systemd" / "nerv-hub.service"
+    return root / ".n3rv" / "systemd" / "n3rv-hub.service"
 
 
 def daemon_install(root: Path) -> int:
@@ -35,7 +35,7 @@ def daemon_install(root: Path) -> int:
         return 1
     dst_dir = Path.home() / ".config" / "systemd" / "user"
     dst_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(src, dst_dir / "nerv-hub.service")
+    shutil.copy2(src, dst_dir / "n3rv-hub.service")
     result = _systemctl("daemon-reload")
     if result.returncode != 0:
         print(f"Error: daemon-reload failed: {result.stderr}", file=sys.stderr)
@@ -46,7 +46,7 @@ def daemon_install(root: Path) -> int:
 
 def daemon_start() -> int:
     _check_systemd()
-    result = _systemctl("start", "nerv-hub")
+    result = _systemctl("start", "n3rv-hub")
     if result.returncode != 0:
         print(f"Error: {result.stderr.strip()}", file=sys.stderr)
         return 1
@@ -56,7 +56,7 @@ def daemon_start() -> int:
 
 def daemon_stop() -> int:
     _check_systemd()
-    result = _systemctl("stop", "nerv-hub")
+    result = _systemctl("stop", "n3rv-hub")
     if result.returncode != 0:
         print(f"Error: {result.stderr.strip()}", file=sys.stderr)
         return 1
@@ -66,7 +66,7 @@ def daemon_stop() -> int:
 
 def daemon_status() -> int:
     _check_systemd()
-    result = _systemctl("is-active", "nerv-hub")
+    result = _systemctl("is-active", "n3rv-hub")
     print(result.stdout.strip())
     return 0 if result.returncode == 0 else 1
 
@@ -76,7 +76,7 @@ def daemon_enable(now: bool = False) -> int:
     args = ["enable"]
     if now:
         args.append("--now")
-    args.append("nerv-hub")
+    args.append("n3rv-hub")
     result = _systemctl(*args)
     if result.returncode != 0:
         print(f"Error: {result.stderr.strip()}", file=sys.stderr)
@@ -92,6 +92,6 @@ def daemon_logs(root: Path) -> int:
     if log_file.exists():
         subprocess.run(["tail", "-f", str(log_file)])
         return 0
-    result = _systemctl("status", "nerv-hub")
+    result = _systemctl("status", "n3rv-hub")
     print(result.stdout)
     return 0

@@ -4,11 +4,11 @@ import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from nerv.mcp.memory_service import MemoryService
-from nerv.models.a2a import AgentSkill, NervAgentCard
+from n3rv.mcp.memory_service import MemoryService
+from n3rv.models.a2a import AgentSkill, NervAgentCard
 
 if TYPE_CHECKING:
-    from nerv.init.registry import SkillRegistry
+    from n3rv.init.registry import SkillRegistry
 
 logger = logging.getLogger("nerv.router")
 

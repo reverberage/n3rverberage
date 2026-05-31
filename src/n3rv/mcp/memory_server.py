@@ -9,8 +9,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from nerv.mcp.memory_service import MemoryService
-from nerv.mcp.shared import (
+from n3rv.mcp.memory_service import MemoryService
+from n3rv.mcp.shared import (
     build_mcp_server,
     detect_agent_source,
     resolve_runtime_settings,
@@ -23,14 +23,14 @@ _SEARCH_NUDGE_THRESHOLD = 3
 
 
 def build_memory_server(project_root: Path | None = None):
-    """Build and return the nerv-memory MCP server."""
+    """Build and return the n3rv-memory MCP server."""
     settings = resolve_runtime_settings(project_root)
     service = MemoryService(settings)
     server = build_mcp_server(
-        "nerv-memory",
+        "n3rv-memory",
         "Shared persistent memory for agent interactions.",
     )
-    profile = os.environ.get("NERV_MEMORY_PROFILE", "full")
+    profile = os.environ.get("N3RV_MEMORY_PROFILE", "full")
 
     @server.tool(description="Persist a memory observation to project-local ChromaDB.")
     async def memory_save(
@@ -135,10 +135,10 @@ def build_memory_server(project_root: Path | None = None):
 
 
 def run_memory_server() -> None:
-    """Entry point for nerv-memory subprocess."""
+    """Entry point for n3rv-memory subprocess."""
     build_memory_server().run()
 
 
 def main() -> None:
-    """Entry point for nerv-memory command."""
+    """Entry point for n3rv-memory command."""
     run_memory_server()

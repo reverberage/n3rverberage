@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from nerv.init.analyzer.frameworks import FrameworkDetector
-from nerv.init.context import Stack
+from n3rv.init.analyzer.frameworks import FrameworkDetector
+from n3rv.init.context import Stack
 
 
 def _write_pyproject(root: Path, deps: list[str]) -> None:

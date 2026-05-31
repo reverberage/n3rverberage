@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
-from nerv.platform import project_relative_path, resolve_project_root
+from n3rv.platform import project_relative_path, resolve_project_root
 
 
 class RuntimePaths(BaseModel):
@@ -13,13 +13,13 @@ class RuntimePaths(BaseModel):
 
     project_root: Path
     memory_dir: Path
-    nerv_dir: Path
+    n3rv_dir: Path
     hub_state_dir: Path
     logs_dir: Path
 
     @property
     def pid_file(self) -> Path:
-        return self.nerv_dir / "hub.pid"
+        return self.n3rv_dir / "hub.pid"
 
     @property
     def log_file(self) -> Path:
@@ -29,17 +29,17 @@ class RuntimePaths(BaseModel):
     def from_project_root(cls, project_root: Path) -> RuntimePaths:
         return cls(
             project_root=project_root,
-            memory_dir=project_relative_path(project_root, ".nerv", "memory"),
-            nerv_dir=project_relative_path(project_root, ".nerv"),
-            hub_state_dir=project_relative_path(project_root, ".nerv", "hub-state"),
-            logs_dir=project_relative_path(project_root, ".nerv", "logs"),
+            memory_dir=project_relative_path(project_root, ".n3rv", "memory"),
+            n3rv_dir=project_relative_path(project_root, ".n3rv"),
+            hub_state_dir=project_relative_path(project_root, ".n3rv", "hub-state"),
+            logs_dir=project_relative_path(project_root, ".n3rv", "logs"),
         )
 
 
 class RuntimeSettings(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    project_name: str = "nerv"
+    project_name: str = "n3rv"
     a2a_host: str = "127.0.0.1"
     a2a_port: int = Field(default=19820, ge=1, le=65535)
     paths: RuntimePaths
@@ -52,9 +52,9 @@ class RuntimeSettings(BaseModel):
 def load_runtime_settings(project_root: Path | None = None) -> RuntimeSettings:
     root = project_root or resolve_project_root()
     paths = RuntimePaths.from_project_root(root)
-    settings = RuntimeSettings(project_name=root.name or "nerv", paths=paths)
+    settings = RuntimeSettings(project_name=root.name or "n3rv", paths=paths)
 
-    config_path = paths.nerv_dir / "a2a-config.yaml"
+    config_path = paths.n3rv_dir / "a2a-config.yaml"
     if not config_path.exists():
         return settings
 

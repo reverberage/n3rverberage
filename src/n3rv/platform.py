@@ -8,7 +8,7 @@ PROJECT_MARKERS = (
     "package.json",
     "go.mod",
     "Cargo.toml",
-    ".nerv",
+    ".n3rv",
 )
 
 

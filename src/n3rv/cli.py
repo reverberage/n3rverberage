@@ -4,9 +4,9 @@ from pathlib import Path
 
 import typer
 
-from nerv.a2a.hub import main as hub_main
-from nerv.cli_memory import memory_app
-from nerv.daemon import (
+from n3rv.a2a.hub import main as hub_main
+from n3rv.cli_memory import memory_app
+from n3rv.daemon import (
     daemon_enable,
     daemon_install,
     daemon_logs,
@@ -14,9 +14,9 @@ from nerv.daemon import (
     daemon_status,
     daemon_stop,
 )
-from nerv.init import run_init
+from n3rv.init import run_init
 
-app = typer.Typer(name="nerv", help="Invisible engineering infrastructure for opencode agents")
+app = typer.Typer(name="n3rv", help="Invisible engineering infrastructure for opencode agents")
 hub_app = typer.Typer(help="A2A Hub commands")
 daemon_app = typer.Typer(help="Manage nerv hub daemon")
 app.add_typer(hub_app, name="hub")
@@ -75,7 +75,7 @@ def update_command(
     root: Path = typer.Option(Path.cwd(), "--root", help="Project root directory"),
 ) -> None:
     """Update agent-native integration files in an existing project."""
-    from nerv.init.update import run_update
+    from n3rv.init.update import run_update
 
     raise typer.Exit(code=run_update(root, dry_run=dry_run, force_commands=force_commands, only=only))
 

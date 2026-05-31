@@ -11,7 +11,7 @@ from mcp import ClientSession
 from mcp.client.stdio import StdioServerParameters, stdio_client
 from mcp.types import CallToolResult, TextContent
 
-from nerv.config import RuntimeSettings
+from n3rv.config import RuntimeSettings
 
 logger = logging.getLogger("nerv.mcp.client")
 
