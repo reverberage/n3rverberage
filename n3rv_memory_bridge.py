@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""NERV Memory Bridge — semantic memory from Hermes via direct Python import.
+"""N3RV Memory Bridge — semantic memory from Hermes via direct Python import.
 
 Usage:
-  uv run python nerv_memory_bridge.py save --title "..." --type decision --content "..."
-  uv run python nerv_memory_bridge.py search "query" --limit 3 --type-filter architecture
-  uv run python nerv_memory_bridge.py recall "topic-key"
-  uv run python nerv_memory_bridge.py context --n 5
+  uv run python n3rv_memory_bridge.py save --title "..." --type decision --content "..."
+  uv run python n3rv_memory_bridge.py search "query" --limit 3 --type-filter architecture
+  uv run python n3rv_memory_bridge.py recall "topic-key"
+  uv run python n3rv_memory_bridge.py context --n 5
 
 Run from inside a project directory (one with .git or pyproject.toml).
 """
@@ -17,15 +17,15 @@ import json
 import sys
 from pathlib import Path
 
-# NERV imports — must be run from within the nerv project venv
-_NERV_DIR = Path(__file__).resolve().parent
+# N3RV imports — must be run from within the n3rv project venv
+_N3RV_DIR = Path(__file__).resolve().parent
 
 
 def _get_service():
     """Bootstrap MemoryService from the current project root."""
-    sys.path.insert(0, str(_NERV_DIR / "src"))
-    from nerv.config import load_runtime_settings
-    from nerv.mcp.memory_service import MemoryService
+    sys.path.insert(0, str(_N3RV_DIR / "src"))
+    from n3rv.config import load_runtime_settings
+    from n3rv.mcp.memory_service import MemoryService
 
     settings = load_runtime_settings(project_root=Path.cwd())
     return MemoryService(settings)
@@ -96,7 +96,7 @@ def cmd_context(args: argparse.Namespace) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="NERV Memory Bridge")
+    parser = argparse.ArgumentParser(description="N3RV Memory Bridge")
     sub = parser.add_subparsers(dest="command", required=True)
 
     # save

@@ -19,7 +19,7 @@ if [[ -z "${TOKEN:-}" ]]; then
 fi
 
 if [[ -z "${TOKEN:-}" ]]; then
-    echo "[nerv:github-mcp] No GitHub token found — run 'gh auth login' or set GITHUB_PERSONAL_ACCESS_TOKEN" >&2
+    echo "[n3rv:github-mcp] No GitHub token found — run 'gh auth login' or set GITHUB_PERSONAL_ACCESS_TOKEN" >&2
     exit 1
 fi
 
