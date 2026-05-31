@@ -222,7 +222,7 @@ def run_init(
 
         n3rv_binary = shutil.which("n3rv")
         if not n3rv_binary:
-            print("✗ Error: nerv binary not found in PATH")
+            print("✗ Error: n3rv binary not found in PATH")
             return 1
 
         templates_dir = Path(__file__).parent / "templates"

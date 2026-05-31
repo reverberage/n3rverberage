@@ -13,7 +13,7 @@ from mcp.types import CallToolResult, TextContent
 
 from n3rv.config import RuntimeSettings
 
-logger = logging.getLogger("nerv.mcp.client")
+logger = logging.getLogger("n3rv.mcp.client")
 
 
 def _subprocess_env() -> dict[str, str]:
@@ -91,7 +91,7 @@ class HubMCPBridge:
     def __init__(self, settings: RuntimeSettings) -> None:
         self.memory = StdioMCPClient(
             settings=settings,
-            module_name="nerv.mcp.memory_server",
+            module_name="n3rv.mcp.memory_server",
             runner_name="run_memory_server",
         )
 

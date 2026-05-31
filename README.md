@@ -15,7 +15,7 @@
 █████████████████████████████████████████████████████████
 ```
 
-`n3rv` is an open-source engineering harness designed to contain, restrain, and orchestrate Large Language Models (LLMs). Instead of treating agents as independent chatbots, NERV builds a rigid operational framework — handling tools, dual-store memory, and real-time project context injection. Integrates natively with opencode via MCP servers, agent skills, slash commands, and sub-agents.
+`n3rv` is an open-source engineering harness designed to contain, restrain, and orchestrate Large Language Models (LLMs). Instead of treating agents as independent chatbots, N3RV builds a rigid operational framework — handling tools, dual-store memory, and real-time project context injection. Integrates natively with opencode via MCP servers, agent skills, slash commands, and sub-agents.
 
 [Architecture](docs/ARCHITECTURE.md) • [SDD Workflow](docs/SDD-WORKFLOW.md) • [MCP Tools](docs/MCP-TOOLS.md) • [Deployment](docs/DEPLOYMENT.md) • [Evangelion](EVANGELION.md) • [Security](SECURITY.md) • [Contributing](CONTRIBUTING.md)
 
@@ -23,7 +23,7 @@
 
 ## ⚡ Core Architecture
 
-The base model is the Angel: raw, uncontained, and unpredictable. NERV is the restraint harness that binds it to your local development environment.
+The base model is the Angel: raw, uncontained, and unpredictable. N3RV is the restraint harness that binds it to your local development environment.
 
 *   **MAGI Consensus Architecture:** Dual-layer memory routing utilizing **ChromaDB** for semantic long-term retrieval and **SQLite** for rigid ACID-compliant session state tracking (verdicts, relations).
 *   **LCL Project Injection:** Automatic parsing of environment manifests (`pyproject.toml`, `package.json`). The agent "breathes" your project architecture from session one.
@@ -123,7 +123,7 @@ Each phase is a dedicated skill + sub-agent. Phases write to persistent memory w
 
 ## 🗺️ Project Status
 
-NERV is currently under active development, built in public. We are testing restraint stability and optimizing context-delivery pipelines.
+N3RV is currently under active development, built in public. We are testing restraint stability and optimizing context-delivery pipelines.
 
 **Install from source after updates:**
 
@@ -135,7 +135,7 @@ cd ~/Projects/n3rv && git pull && uv tool install --reinstall .
 
 ## 📄 License
 
-Distributed under the **GNU General Public License v2.0 (GPL-2.0)**. NERV is copyleft software — keeping the armor open ensures the angels stay contained.
+Distributed under the **GNU General Public License v2.0 (GPL-2.0)**. N3RV is copyleft software — keeping the armor open ensures the angels stay contained.
 
 ---
 

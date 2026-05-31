@@ -16,7 +16,7 @@ from n3rv.models.memory import (
     SessionStartResult,
 )
 
-logger = logging.getLogger("nerv.mcp.session")
+logger = logging.getLogger("n3rv.mcp.session")
 
 _SESSION_CONTEXT_TYPES = [
     MemoryType.DECISION,

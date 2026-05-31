@@ -1,6 +1,6 @@
 # MCP Tools Reference
 
-NERV exposes two MCP servers with a total of 17 tools for agent integration.
+N3RV exposes two MCP servers with a total of 17 tools for agent integration.
 
 ## Memory Server (`n3rv-memory`)
 

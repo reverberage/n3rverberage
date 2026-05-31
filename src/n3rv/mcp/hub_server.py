@@ -18,7 +18,7 @@ from n3rv.mcp.shared import (
 )
 from n3rv.util import get_hub_url
 
-logger = logging.getLogger("nerv.mcp.hub")
+logger = logging.getLogger("n3rv.mcp.hub")
 
 _TERMINAL_TASK_STATES = {"completed", "failed", "canceled"}
 _AGENT_ID_ALIASES = {

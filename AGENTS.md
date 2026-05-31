@@ -1,4 +1,4 @@
-# >>> NERV-MARKER-START
+# >>> N3RV-MARKER-START
 # AGENTS.md — Coding Standards for n3rv
 
 ## Project Stack
@@ -99,4 +99,4 @@ REJECT if:
 REQUIRE:
 - Descriptive variable and function names
 - Error messages that help debugging
-# >>> NERV-MARKER-END
+# >>> N3RV-MARKER-END

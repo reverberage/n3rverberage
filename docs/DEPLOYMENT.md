@@ -1,6 +1,6 @@
 # Deployment
 
-NERV is a local-only tool that runs as part of your development workflow. It is not designed for production server deployment.
+N3RV is a local-only tool that runs as part of your development workflow. It is not designed for production server deployment.
 
 ## Development Machine
 
@@ -18,7 +18,7 @@ cd n3rv
 uv sync
 ```
 
-This installs NERV in a virtual environment managed by uv. Entry points `n3rv`, `n3rv-memory`, and `n3rv-hub` are available.
+This installs N3RV in a virtual environment managed by uv. Entry points `n3rv`, `n3rv-memory`, and `n3rv-hub` are available.
 
 ### Verify Installation
 
@@ -28,7 +28,7 @@ n3rv-memory --help
 n3rv-hub --help
 ```
 
-## Using NERV in a Project
+## Using N3RV in a Project
 
 ### 1. Initialize
 
@@ -105,7 +105,7 @@ hub:
 
 ## Multi-Agent Architecture
 
-NERV enables multiple opencode agents across different projects to coordinate through a shared hub and independent per-project memory.
+N3RV enables multiple opencode agents across different projects to coordinate through a shared hub and independent per-project memory.
 
 ### Architecture
 
@@ -156,7 +156,7 @@ opencode Go subscription ($10/mo, $60/mo cap) provides per-request limits that c
 - Enable "Use balance" in opencode Go console to fall back to Zen credits when Go limit is hit
 - Monitor usage: `opencode stats --days 7`
 
-## Updating NERV
+## Updating N3RV
 
 ```bash
 cd /path/to/n3rv
@@ -177,10 +177,10 @@ The daemon systemd unit is refreshed on update. `opencode.json` is JSON-merged (
 
 ## CI/CD Integration
 
-NERV's memory and hub components are local-only. Use the CLI for scaffolding:
+N3RV's memory and hub components are local-only. Use the CLI for scaffolding:
 
 ```yaml
-- name: Setup NERV
+- name: Setup N3RV
   run: |
     curl -LsSf https://astral.sh/uv/install.sh | sh
     uv sync
@@ -221,7 +221,7 @@ rm -rf .n3rv/memory/chroma/
 
 ### ONNXRuntime Unavailable
 
-On Python 3.14 or Windows, ONNXRuntime may not have a compatible wheel. NERV falls back to hash embeddings automatically. Search quality degrades to exact keyword matching.
+On Python 3.14 or Windows, ONNXRuntime may not have a compatible wheel. N3RV falls back to hash embeddings automatically. Search quality degrades to exact keyword matching.
 
 ### Hub Connection Refused
 

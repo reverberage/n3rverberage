@@ -12,7 +12,7 @@ from n3rv.init.analyzer.structure import StructureDetector
 from n3rv.init.analyzer.tools import ToolDetector
 from n3rv.init.context import ProjectContext
 
-logger = logging.getLogger("nerv.init.analyzer")
+logger = logging.getLogger("n3rv.init.analyzer")
 
 
 def analyze_project(root: Path, context: ProjectContext) -> ProjectProfile:

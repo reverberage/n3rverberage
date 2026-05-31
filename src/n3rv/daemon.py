@@ -31,7 +31,7 @@ def daemon_install(root: Path) -> int:
     src = _unit_path(root)
     if not src.exists():
         print(f"Error: unit file not found at {src}", file=sys.stderr)
-        print("Run 'nerv init' first", file=sys.stderr)
+        print("Run 'n3rv init' first", file=sys.stderr)
         return 1
     dst_dir = Path.home() / ".config" / "systemd" / "user"
     dst_dir.mkdir(parents=True, exist_ok=True)
@@ -40,7 +40,7 @@ def daemon_install(root: Path) -> int:
     if result.returncode != 0:
         print(f"Error: daemon-reload failed: {result.stderr}", file=sys.stderr)
         return 1
-    print("Hub daemon installed. Run 'nerv daemon enable --now' to enable and start.")
+    print("Hub daemon installed. Run 'n3rv daemon enable --now' to enable and start.")
     return 0
 
 

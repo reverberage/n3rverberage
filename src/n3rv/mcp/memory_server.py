@@ -17,7 +17,7 @@ from n3rv.mcp.shared import (
     result_payload,
 )
 
-logger = __import__("logging").getLogger("nerv.mcp.memory")
+logger = __import__("logging").getLogger("n3rv.mcp.memory")
 
 _SEARCH_NUDGE_THRESHOLD = 3
 

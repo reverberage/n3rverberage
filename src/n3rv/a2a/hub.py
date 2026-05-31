@@ -20,7 +20,7 @@ from n3rv.mcp.memory_service import MemoryService
 from n3rv.mcp.shared import ensure_runtime_directories, resolve_runtime_settings
 from n3rv.models.a2a import TaskState
 
-logger = logging.getLogger("nerv.hub")
+logger = logging.getLogger("n3rv.hub")
 
 HUB_KEY = web.AppKey("hub", "A2AHub")
 
@@ -466,7 +466,7 @@ async def run_hub() -> None:
     await runner.setup()
     site = web.TCPSite(runner, host=settings.a2a_host, port=settings.a2a_port)
     await site.start()
-    logger.info("nerv hub listening on %s:%d", settings.a2a_host, settings.a2a_port)
+    logger.info("n3rv hub listening on %s:%d", settings.a2a_host, settings.a2a_port)
 
     pid_path = settings.paths.pid_file
     pid_path.write_text(str(os.getpid()))
@@ -482,11 +482,11 @@ async def run_hub() -> None:
 
     try:
         await shutdown_event.wait()
-        logger.info("nerv hub shutting down on signal")
+        logger.info("n3rv hub shutting down on signal")
     finally:
         _mark_working_tasks_failed(hub)
         await runner.cleanup()
-        logger.info("nerv hub stopped")
+        logger.info("n3rv hub stopped")
         try:
             pid_path.unlink(missing_ok=True)
         except OSError:

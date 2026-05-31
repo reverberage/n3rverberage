@@ -16,7 +16,7 @@ from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
 from n3rv.config import RuntimeSettings
 from n3rv.models.memory import MemoryScope
 
-logger = logging.getLogger("nerv.mcp.vector")
+logger = logging.getLogger("n3rv.mcp.vector")
 
 _SIMPLE_HASH_DIM = 384
 _TOPIC_KEY_PATTERN = re.compile(r"^[a-z0-9-]+$")
@@ -26,7 +26,7 @@ class _SimpleHashEmbeddingFunction(EmbeddingFunction):
     """Deterministic hash-based embeddings — no ML deps required."""
 
     def name(self) -> str:
-        return "nerv-hash"
+        return "n3rv-hash"
 
     def __call__(self, input: Documents) -> Embeddings:
         embeddings: Embeddings = []

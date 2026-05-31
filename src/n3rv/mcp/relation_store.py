@@ -7,7 +7,7 @@ import sqlite3
 from pathlib import Path
 from uuid import NAMESPACE_URL, uuid5
 
-logger = logging.getLogger("nerv.mcp.relation")
+logger = logging.getLogger("n3rv.mcp.relation")
 
 
 class RelationStore:

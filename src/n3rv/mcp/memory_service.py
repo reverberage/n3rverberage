@@ -29,7 +29,7 @@ from n3rv.models.memory import (
     TimelineResult,
 )
 
-logger = logging.getLogger("nerv.mcp.service")
+logger = logging.getLogger("n3rv.mcp.service")
 
 _SEARCH_NUDGE_THRESHOLD = 3
 _SEARCH_NUDGE_MESSAGE = (

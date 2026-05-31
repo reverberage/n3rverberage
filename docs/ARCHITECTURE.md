@@ -1,6 +1,6 @@
 # Architecture
 
-NERV provides invisible engineering infrastructure for AI agents through three integrated subsystems: **CLI scaffolding**, **persistent memory**, and **A2A task delegation**.
+N3RV provides invisible engineering infrastructure for AI agents through three integrated subsystems: **CLI scaffolding**, **persistent memory**, and **A2A task delegation**.
 
 ## Entry Points
 
@@ -14,9 +14,9 @@ NERV provides invisible engineering infrastructure for AI agents through three i
 
 The n3rv project draws its name and thematic structure from *Neon Genesis Evangelion*. Every subsystem maps to an Evangelion concept. Understanding these mappings reveals the design philosophy:
 
-| Evangelion Concept | NERV Subsystem | Why |
+| Evangelion Concept | N3RV Subsystem | Why |
 |---|---|---|
-| **MAGI Supercomputer** | Memory Service | Three independent minds (ChromaDB, SQLite, SessionManager) reach consensus — just as Melchior, Balthasar, Casper vote on NERV's decisions |
+| **MAGI Supercomputer** | Memory Service | Three independent minds (ChromaDB, SQLite, SessionManager) reach consensus — just as Melchior, Balthasar, Casper vote on N3RV's decisions |
 | **EVA Units** | AI Agents | Purpose-built entities dispatched from the Command Center (A2A Hub) to execute missions (tasks) |
 | **Geofront** | `.n3rv/` directory | Hidden infrastructure beneath the workspace — houses memory stores, hub state, and configuration |
 | **Command Center** | A2A Hub + MCP Hub Server | Central dispatch. Routes tasks to agents by skill ID, monitors execution, collects results |
@@ -31,7 +31,7 @@ For the full concept map including LCL (knowledge layer), Entry Plug (context), 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      opencode Agent                        │
-│  (uses MCP tools to interact with NERV)                   │
+│  (uses MCP tools to interact with N3RV)                   │
 └──────────────┬──────────────────────┬─────────────────────┘
                │                      │
                │ MCP tools            │ MCP tools

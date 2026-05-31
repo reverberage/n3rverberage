@@ -11,7 +11,7 @@ from n3rv.init.analyzer.profile import (
 )
 from n3rv.init.context import Stack
 
-logger = logging.getLogger("nerv.init.analyzer.mcp")
+logger = logging.getLogger("n3rv.init.analyzer.mcp")
 
 
 # ── Universal MCP servers (every project) ──────────────────────────

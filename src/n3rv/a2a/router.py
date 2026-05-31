@@ -10,7 +10,7 @@ from n3rv.models.a2a import AgentSkill, NervAgentCard
 if TYPE_CHECKING:
     from n3rv.init.registry import SkillRegistry
 
-logger = logging.getLogger("nerv.router")
+logger = logging.getLogger("n3rv.router")
 
 
 @dataclass(frozen=True)
