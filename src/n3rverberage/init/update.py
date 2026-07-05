@@ -14,13 +14,13 @@ from n3rverberage.init import N3RV_DIR, NERV_DIR
 from n3rverberage.init.analyzer import analyze_project
 from n3rverberage.init.context import ProjectContext
 from n3rverberage.init.detector import detect_stack
-from n3rverberage.init.registry import write_registry
 from n3rverberage.init.lockfile import (
     diff_lockfile,
     record_entry,
     save_lockfile,
     update_lockfile_entry,
 )
+from n3rverberage.init.registry import write_registry
 from n3rverberage.init.renderer import TemplateEngine
 from n3rverberage.init.writer import MARKER_END, MARKER_START, validate_markers, write_file
 

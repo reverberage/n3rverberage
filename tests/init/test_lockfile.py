@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-
-import pytest
 
 from n3rverberage.init.lockfile import (
     LOCKFILE_NAME,
@@ -19,7 +16,6 @@ from n3rverberage.init.lockfile import (
     save_lockfile,
     update_lockfile_entry,
 )
-
 
 # ---------------------------------------------------------------------------
 # _sha256
@@ -302,6 +298,5 @@ def test_lockfile_lifecycle(tmp_path: Path):
     assert "app.py" in drift
 
     # Record new hash → no drift
-    h2 = _sha256(f)
     update_lockfile_entry(tmp_path, "app.py", record_entry(f, "app.py.j2"))
     assert diff_lockfile(tmp_path, {"app.py": f}) == {}

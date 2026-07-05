@@ -80,7 +80,15 @@ def update_command(
     """Update agent-native integration files in an existing project."""
     from n3rverberage.init.update import run_update
 
-    raise typer.Exit(code=run_update(root, dry_run=dry_run or diff, show_diff=diff, force_commands=force_commands, only=only))
+    raise typer.Exit(
+        code=run_update(
+            root,
+            dry_run=dry_run or diff,
+            show_diff=diff,
+            force_commands=force_commands,
+            only=only,
+        )
+    )
 
 
 @daemon_app.command("install")
