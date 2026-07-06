@@ -162,20 +162,18 @@ def protect_repo(repo_url: str, dry_run: bool = False) -> bool:
                 if wf_content.returncode == 0:
                     try:
                         import base64
+                        content = base64.b64decode(
+                            json.loads(wf_content.stdout).get("content", "")
+                        ).decode()
+                        import yaml as yaml_lib  # noqa: N812 — same yaml dep used elsewhere
 
-                        content = base64.b64decode(json.loads(wf_content.stdout).get("content", "")).decode()
-                        # Detect top-level jobs (2-space indent, under "jobs:")
-                        in_jobs = False
-                        for line in content.splitlines():
-                            if line.rstrip() == "jobs:":
-                                in_jobs = True
+                        parsed = yaml_lib.safe_load(content)
+                        jobs = (parsed or {}).get("jobs", {})
+                        for job_id, job_def in jobs.items():
+                            if not isinstance(job_def, dict):
                                 continue
-                            if in_jobs and not line.startswith(" ") and line.strip():
-                                in_jobs = False
-                            if in_jobs and line.startswith("  ") and not line.startswith("    "):
-                                job_name = line.strip().rstrip(":").rstrip()
-                                if job_name and " " not in job_name:
-                                    checks.append({"context": f"{wf_name} / {job_name}", "app_id": 15368})
+                            check_name = job_def.get("name", job_id)
+                            checks.append({"context": f"{wf_name} / {check_name}", "app_id": 15368})
                     except Exception:
                         pass
         except Exception:

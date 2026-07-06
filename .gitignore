@@ -1,7 +1,13 @@
 .nerv/
 .n3rv/
-.n3rverberage/
 *.pyc
 __pycache__/
 .venv/
 dist/
+
+# N3RVERBERAGE — NEVER COMMIT (template-controlled)
+.n3rverberage/
+.opencode/
+.githooks/
+AGENTS.md
+opencode.json
