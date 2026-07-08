@@ -126,8 +126,7 @@ def get_tts_provider(
         model_ids = [m.strip() for m in fallback_models.split(",") if m.strip()]
         if not model_ids:
             raise ValueError(
-                "N3RVERBERAGE_TTS_FALLBACK_MODELS is set but empty. "
-                "Set it to a comma-separated list of TTS model IDs."
+                "N3RVERBERAGE_TTS_FALLBACK_MODELS is set but empty. Set it to a comma-separated list of TTS model IDs."
             )
         providers = [
             TTSProvider(
