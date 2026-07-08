@@ -42,11 +42,7 @@ class QwenProvider(ModelProvider):
         base_url: str | None = None,
     ) -> None:
         # Resolve base URL: explicit > env var > default
-        self._resolved_base_url = (
-            base_url
-            or os.environ.get(_BASE_URL_ENV_VAR)
-            or _DEFAULT_BASE_URL
-        )
+        self._resolved_base_url = base_url or os.environ.get(_BASE_URL_ENV_VAR) or _DEFAULT_BASE_URL
         super().__init__(api_key, model, self._resolved_base_url)
         resolved_key = self._api_key or os.environ.get("DASHSCOPE_API_KEY")
         if not resolved_key:

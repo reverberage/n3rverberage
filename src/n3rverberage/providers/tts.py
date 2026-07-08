@@ -67,8 +67,7 @@ class TTSProvider:
         self._api_key = api_key or os.environ.get("DASHSCOPE_API_KEY")
         if not self._api_key:
             raise ValueError(
-                "DASHSCOPE_API_KEY is not set. Provide api_key or set the "
-                "DASHSCOPE_API_KEY environment variable."
+                "DASHSCOPE_API_KEY is not set. Provide api_key or set the DASHSCOPE_API_KEY environment variable."
             )
 
         self.model = model or _DEFAULT_MODEL
@@ -79,11 +78,7 @@ class TTSProvider:
             or os.environ.get("N3RVERBERAGE_BASE_URL")
             or _DEFAULT_BASE_URL
         )
-        self.voice = (
-            voice
-            or os.environ.get("N3RVERBERAGE_TTS_VOICE")
-            or _DEFAULT_VOICE
-        )
+        self.voice = voice or os.environ.get("N3RVERBERAGE_TTS_VOICE") or _DEFAULT_VOICE
         self._client = httpx.Client(timeout=_TTS_TIMEOUT_SEC)
 
     # ------------------------------------------------------------------

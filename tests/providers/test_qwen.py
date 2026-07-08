@@ -45,18 +45,24 @@ class TestConstructor:
                 QwenProvider()
 
     def test_base_url_from_env_var(self) -> None:
-        with patch.dict("os.environ", {
-            "DASHSCOPE_API_KEY": "sk-test",
-            "N3RVERBERAGE_QWEN_BASE_URL": "https://workspace.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1",
-        }):
+        with patch.dict(
+            "os.environ",
+            {
+                "DASHSCOPE_API_KEY": "sk-test",
+                "N3RVERBERAGE_QWEN_BASE_URL": "https://workspace.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1",
+            },
+        ):
             p = QwenProvider()
         assert p.base_url == "https://workspace.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1"
 
     def test_explicit_base_url_overrides_env_var(self) -> None:
-        with patch.dict("os.environ", {
-            "DASHSCOPE_API_KEY": "sk-test",
-            "N3RVERBERAGE_QWEN_BASE_URL": "https://env-override/v1",
-        }):
+        with patch.dict(
+            "os.environ",
+            {
+                "DASHSCOPE_API_KEY": "sk-test",
+                "N3RVERBERAGE_QWEN_BASE_URL": "https://env-override/v1",
+            },
+        ):
             p = QwenProvider(base_url="https://explicit/v1")
         assert p.base_url == "https://explicit/v1"
 
