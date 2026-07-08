@@ -21,6 +21,9 @@ from n3rverberage.providers.models import (
 # Alibaba recommends migrating to:
 #   https://{WorkspaceId}.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1
 # Set via N3RVERBERAGE_QWEN_BASE_URL env var or the base_url constructor arg.
+#
+# IPv6: dashscope-intl.aliyuncs.com has NO AAAA records.
+# IPv6-only environments must use the workspace-specific domain or an IPv4 proxy.
 _DEFAULT_BASE_URL = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
 _DEFAULT_MODEL = "qwen3-coder-plus"
 _TIMEOUT_SEC = 60.0

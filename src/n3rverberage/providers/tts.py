@@ -30,6 +30,9 @@ import httpx
 # Alibaba recommends migrating to:
 #   https://{WorkspaceId}.ap-southeast-1.maas.aliyuncs.com/api/v1
 # Set via N3RVERBERAGE_TTS_BASE_URL env var or the base_url constructor arg.
+#
+# IPv6: dashscope-intl.aliyuncs.com has NO AAAA records.
+# IPv6-only environments must use the workspace-specific domain or an IPv4 proxy.
 _DEFAULT_BASE_URL = "https://dashscope-intl.aliyuncs.com/api/v1"
 _DEFAULT_MODEL = "qwen3-tts-flash"
 _DEFAULT_VOICE = "Cherry"
