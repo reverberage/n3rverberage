@@ -110,12 +110,19 @@ def build_memory_server(project_root: Path | None = None):
             )
         )
 
-    @server.tool(description="Soft-delete memories of a given scope older than N days.")
-    async def memory_prune(scope: str, older_than_days: int) -> dict:
+    @server.tool(description="Soft-delete memories of a given scope older than N days. Optionally filter by type.")
+    async def memory_prune(
+        scope: str,
+        older_than_days: int | None = None,
+        type_filter: str | None = None,
+        hard_delete: bool = False,
+    ) -> dict:
         return result_payload(
             service.memory_prune(
                 scope=scope,
                 older_than_days=older_than_days,
+                type_filter=type_filter,
+                hard_delete=hard_delete,
             )
         )
 

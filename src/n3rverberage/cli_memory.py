@@ -122,16 +122,28 @@ def memory_search(
 
 @memory_app.command("prune")
 def memory_prune(
-    scope: str = typer.Option(..., "--scope", help="Scope to prune: session or personal"),
-    older_than: int = typer.Option(30, "--older-than", help="Soft-delete memories older than N days"),
+    scope: str = typer.Option(..., "--scope", help="Memory scope to prune: session, personal, or project"),
+    older_than: int | None = typer.Option(
+        None, "--older-than", help="TTL in days (default: from config per scope/type)"
+    ),
+    type: str | None = typer.Option(None, "--type", help="Comma-separated memory types (e.g., summary,context)"),
+    hard_delete: bool = typer.Option(False, "--hard-delete", help="Permanently remove instead of soft-delete"),
 ) -> None:
-    """Soft-delete old memories of a given scope."""
+    """Delete old memories of a given scope, optionally filtered by type."""
     try:
-        result = _build_service().memory_prune(scope=scope, older_than_days=older_than)
+        result = _build_service().memory_prune(
+            scope=scope,
+            older_than_days=older_than,
+            type_filter=type,
+            hard_delete=hard_delete,
+        )
     except Exception as exc:
         _print_memory_error(exc)
 
-    console.print(f"Pruned [green]{result['pruned']}[/green] {scope} memories older than {older_than} days.")
+    mode = "Permanently deleted" if hard_delete else "Pruned"
+    type_info = f" type={type}" if type else ""
+    ttl_info = f" older than {older_than} days" if older_than else ""
+    console.print(f"{mode} [green]{result['pruned']}[/green] {scope} memories{type_info}{ttl_info}.")
 
 
 @memory_app.command("stats")

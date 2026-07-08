@@ -384,9 +384,46 @@ class MemoryService:
             )
         )
 
-    def memory_prune(self, *, scope: str, older_than_days: int) -> dict:
-        """Soft-delete active memories of the given scope older than N days."""
+    def memory_prune(
+        self,
+        *,
+        scope: str,
+        older_than_days: int | None = None,
+        type_filter: str | None = None,
+        hard_delete: bool = False,
+    ) -> dict:
+        """Delete old memories of the given scope, optionally filtered by type.
+
+        When ``older_than_days`` is ``None``, uses the TTL from :attr:`settings.memory_ttl`,
+        which provides scope-level defaults with per-type overrides.
+
+        Parameters
+        ----------
+        scope:
+            Memory scope to prune (session, personal, project).
+        older_than_days:
+            Override TTL. When ``None``, uses configured TTL for the scope/type.
+        type_filter:
+            Comma-separated list of memory types to prune (e.g. ``"summary,context"``).
+            When ``None``, prunes all types in the scope.
+        hard_delete:
+            When ``True``, permanently removes from ChromaDB instead of soft-deleting.
+        """
         memory_scope = MemoryScope(scope)
+        types_to_prune: set[str] | None = None
+        if type_filter:
+            types_to_prune = {t.strip() for t in type_filter.split(",") if t.strip()}
+            if not types_to_prune:
+                raise ValueError("type_filter is set but empty")
+
+        # Resolve TTL from config with per-type overrides
+        if older_than_days is None:
+            ttl_cfg = self.settings.memory_ttl.get(scope, {"default": 365})
+            older_than_days = ttl_cfg["default"]
+            overrides = ttl_cfg.get("overrides", {})
+        else:
+            overrides = {}
+
         if not 1 <= older_than_days <= 3650:
             raise ValueError("older_than_days must be between 1 and 3650")
 
@@ -401,6 +438,16 @@ class MemoryService:
         now_iso = self.vector_store.now().isoformat()
 
         for item_id, metadata in zip(result["ids"], result["metadatas"], strict=False):
+            mem_type = str(metadata.get("type", ""))
+
+            # Apply type filter
+            if types_to_prune is not None and mem_type not in types_to_prune:
+                continue
+
+            # Per-type TTL override (shorter-lived types get their own cutoff)
+            type_ttl = overrides.get(mem_type, older_than_days)
+            type_cutoff = self.vector_store.now() - timedelta(days=type_ttl) if type_ttl != older_than_days else cutoff
+
             ts_str = str(metadata.get("updated_at") or metadata.get("timestamp", ""))
             if not ts_str:
                 continue
@@ -408,19 +455,27 @@ class MemoryService:
                 ts = self.vector_store.parse_timestamp(ts_str)
             except ValueError:
                 continue
-            if ts < cutoff:
-                updated_meta = dict(metadata)
-                updated_meta["deleted_at"] = now_iso
-                ids_to_prune.append(item_id)
-                metas_to_update.append(updated_meta)
+            if ts < type_cutoff:
+                if hard_delete:
+                    ids_to_prune.append(item_id)
+                else:
+                    updated_meta = dict(metadata)
+                    updated_meta["deleted_at"] = now_iso
+                    ids_to_prune.append(item_id)
+                    metas_to_update.append(updated_meta)
 
         if ids_to_prune:
-            self.vector_store.update(ids=ids_to_prune, metadatas=metas_to_update)
+            if hard_delete:
+                self.vector_store.delete(ids=ids_to_prune)
+            else:
+                self.vector_store.update(ids=ids_to_prune, metadatas=metas_to_update)
 
         logger.debug(
-            "memory_prune scope=%s older_than=%d pruned=%d",
+            "memory_prune scope=%s older_than=%d types=%s hard_delete=%s pruned=%d",
             scope,
             older_than_days,
+            type_filter or "all",
+            hard_delete,
             len(ids_to_prune),
         )
         return _to_dict(

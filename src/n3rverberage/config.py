@@ -36,6 +36,22 @@ class RuntimePaths(BaseModel):
         )
 
 
+_DEFAULT_MEMORY_TTL: dict[str, dict] = {
+    "session": {"default": 7, "overrides": {"summary": 7, "context": 30}},
+    "personal": {"default": 90},
+    "project": {
+        "default": 365,
+        "overrides": {
+            "architecture": 365,
+            "decision": 365,
+            "bugfix": 180,
+            "config": 180,
+            "learning": 180,
+        },
+    },
+}
+
+
 class RuntimeSettings(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -43,6 +59,7 @@ class RuntimeSettings(BaseModel):
     a2a_host: str = "127.0.0.1"
     a2a_port: int = Field(default=19820, ge=1, le=65535)
     paths: RuntimePaths
+    memory_ttl: dict = Field(default_factory=lambda: _DEFAULT_MEMORY_TTL.copy())
 
     @property
     def a2a_base_url(self) -> str:
