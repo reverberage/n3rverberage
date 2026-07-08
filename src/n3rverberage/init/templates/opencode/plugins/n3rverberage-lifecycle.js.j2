@@ -1,11 +1,11 @@
 /**
  * n3rverberage-lifecycle plugin for OpenCode.
  *
- * Two hooks:
+ * Three hooks:
  * 1. experimental.session.compacting — injects SDD pipeline state into
  *    compaction context so SDD state survives context overflow.
  * 2. event (session.idle) — auto-archives session summaries after 300s idle
- *    if SDD activity was detected.
+ *    if SDD activity was detected, then auto-prunes old session memories.
  *
  * Uses the OpenCode 1.14.x plugin API: a factory function returning hooks.
  */
@@ -50,6 +50,31 @@ async function memorySessionSummary(summaryText) {
         params: { summary: summaryText },
       }),
       signal: AbortSignal.timeout(2000),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Triggers memory_prune for a given scope, using the config's default TTL
+ * (older_than_days = null means the MCP service resolves from RuntimeSettings).
+ */
+async function memoryPrune(scope, typeFilter = null) {
+  try {
+    const params = { scope };
+    if (typeFilter) params.type_filter = typeFilter;
+    const res = await fetch(`${MEMORY_MCP_URL}/rpc`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: Date.now(),
+        method: "memory_prune",
+        params,
+      }),
+      signal: AbortSignal.timeout(3000),
     });
     return res.ok;
   } catch {
@@ -163,6 +188,10 @@ export const NervLifecycle = async (_ctx) => {
 
         const summary = `Session idle after ${Math.round(idleMs / 1000)}s. SDD activity detected (${hits.length} memory keys).`;
         await memorySessionSummary(summary);
+
+        // Auto-prune old session memories using config defaults (7 days).
+        // This runs silently — failures don't block the lifecycle.
+        await memoryPrune("session");
       } catch {
         // Degrade silently — never block
       }
