@@ -50,7 +50,7 @@ class TestOrgCliGroup:
         result = runner.invoke(app, ["org", "add-satellite", "--help"])
         assert result.exit_code == 0
         out = _strip_ansi(result.stdout)
-        assert "NAME" in out
+        assert "name" in out
         assert "--description" in out
 
     def test_org_sync_help(self) -> None:

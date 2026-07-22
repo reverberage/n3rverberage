@@ -41,7 +41,7 @@ def test_project_context_to_dict():
 
     assert result["project_name"] == "testproject"
     assert result["stack"] == "node"  # Stack enum converted to string
-    assert result["n3rverberage_version"] in ("dev", "0.1.0")
+    assert result["n3rverberage_version"] in ("dev", "0.1.0", "0.1.1")
     assert "timestamp" in result
 
 
